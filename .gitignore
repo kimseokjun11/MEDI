@@ -1,0 +1,18 @@
+# VS Code
+.vscode/
+
+# Node / React
+node_modules/
+dist/
+build/
+.vite/
+
+# frontend
+frontend/node_modules/
+frontend/dist/
+
+# backend
+backend/target/
+
+# env
+.env

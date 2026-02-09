@@ -1,0 +1,111 @@
+/* 전체 래퍼 */
+.board-wrapper {
+  max-width: 1200px;          /* 화면을 더 넓게 사용 */
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* 헤더 */
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;        /* 헤더-테이블 간 여백 증가 */
+}
+
+.board-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 검색 + 버튼 영역 */
+.board-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.board-search {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  min-width: 220px;
+}
+
+.board-search:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.board-btn {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: none;
+  background: #e5e7eb;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.board-btn.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.board-btn:hover {
+  opacity: 0.9;
+}
+
+/* 테이블 */
+.board-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 20px;        /* 더 부드러운 카드 느낌 */
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08); /* 존재감 강화 */
+}
+
+/* 테이블 헤더/셀 */
+.board-table th,
+.board-table td {
+  padding: 18px;              /* 행 높이 증가 */
+  font-size: 14px;
+  text-align: center;
+}
+
+.board-table th {
+  background: #f1f5f9;
+  font-weight: 700;
+  color: #334155;
+}
+
+.board-table tr {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.board-table tr:last-child {
+  border-bottom: none;
+}
+
+/* 제목 컬럼만 왼쪽 정렬 */
+.board-table td:nth-child(2) {
+  text-align: left;
+}
+
+/* 제목 링크 느낌 */
+.board-title {
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.board-title:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,78 @@
+.boarddetail-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* 카드 */
+.boarddetail-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+/* 제목 */
+.boarddetail-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #0f172a;
+}
+
+/* 정보 */
+.boarddetail-info {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+/* 내용 */
+.boarddetail-content {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1f2937;
+  min-height: 200px;
+  white-space: pre-line;
+}
+
+/* 버튼 */
+.boarddetail-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.boarddetail-actions button {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* 목록 */
+.boarddetail-actions button:first-child {
+  background: #e5e7eb;
+  color: #334155;
+}
+
+/* 수정 */
+.boarddetail-actions .edit {
+  background: #2563eb;
+  color: white;
+}
+
+/* 삭제 */
+.boarddetail-actions .delete {
+  background: #ef4444;
+  color: white;
+}
+
+.boarddetail-actions button:hover {
+  opacity: 0.9;
+}
