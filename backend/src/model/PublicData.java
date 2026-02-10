@@ -25,6 +25,9 @@ public class PublicData {
     @Column(name = "update_date")
     private String updateDate;
 
+     // ✅ 추가: 건강기능식품 신고번호(고유키)
+    private String sttemntNo;
+
     public PublicData() {}
 
     // Getter
@@ -34,6 +37,10 @@ public class PublicData {
     public String getCategory() { return category; }
     public String getProvider() { return provider; }
     public String getUpdateDate() { return updateDate; }
+    
+    // ✅ 추가된 getter/setter
+    public String getSttemntNo() { return sttemntNo; }
+    
 
     // Setter
     public void setId(int id) { this.id = id; }
@@ -42,6 +49,7 @@ public class PublicData {
     public void setCategory(String category) { this.category = category; }
     public void setProvider(String provider) { this.provider = provider; }
     public void setUpdateDate(String updateDate) { this.updateDate = updateDate; }
+    public void setSttemntNo(String sttemntNo) { this.sttemntNo = sttemntNo; }
 
     @Override
     public String toString() {
