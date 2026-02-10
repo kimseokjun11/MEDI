@@ -1,13 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useEffect, useState, useRef } from 'react';
+import CommentSection from '../components/CommentSection';
 import '../styles/BoardDetail.css';
 
-/*
-  ⚠️ 현재는 게시글 상세 조회 API가 있다고 가정
-  실제로는 useEffect로 서버에서 게시글 1건을 가져오는 구조로 바꾸면 됨
-*/
-
-// 임시 게시글 데이터 (※ 나중에 서버 API로 교체)
+// 더미 게시글 데이터
 const dummyPosts = [
   {
     id: 1,
@@ -28,14 +24,19 @@ const dummyPosts = [
 const BoardDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  // ✅ 로그인한 사용자 아이디
   const loginUser = localStorage.getItem('loginUser');
 
-  // 임시: 게시글 찾기
-  const post = dummyPosts.find((p) => p.id === Number(id));
+  // 조회수
+  const [viewCount, setViewCount] = useState(0);
+  const hasIncreased = useRef(false); // StrictMode 중복 방지
 
-  // 게시글 없을 때
+  // 수정된 게시글 우선 적용
+  const editedPost = localStorage.getItem(`editedPost-${id}`);
+
+  const post = editedPost
+    ? JSON.parse(editedPost)
+    : dummyPosts.find((p) => p.id === Number(id));
+
   if (!post) {
     return (
       <div className="boarddetail-wrapper">
@@ -44,24 +45,23 @@ const BoardDetail = () => {
     );
   }
 
-  // ✅ 삭제 처리 (DB 연동)
-  const handleDelete = async () => {
-    if (!confirm('정말 삭제하시겠습니까?')) return;
+  // ✅ 조회수 증가 (정상 동작)
+  useEffect(() => {
+    if (hasIncreased.current) return;
 
-    try {
-      await axios.delete(`http://localhost:8080/api/boards/${post.id}`, {
-        params: {
-          userid: loginUser, // 🔥 서버에서 작성자 검증용
-        },
-      });
+    const countKey = `viewCount-${id}`;
+    const newCount =
+      Number(localStorage.getItem(countKey) || '0') + 1;
 
-      alert('게시글이 삭제되었습니다.');
-      navigate('/board');
-    } catch (error) {
-      console.error(error);
-      alert('삭제 권한이 없거나 오류가 발생했습니다.');
-    }
-  };
+    localStorage.setItem(countKey, String(newCount));
+    setViewCount(newCount);
+
+    hasIncreased.current = true;
+  }, [id]);
+
+  // 임시 관리자(hong) 또는 작성자
+  const canEdit =
+    loginUser === post.writer || loginUser === 'hong';
 
   return (
     <div className="boarddetail-wrapper">
@@ -69,10 +69,11 @@ const BoardDetail = () => {
         {/* 제목 */}
         <h2 className="boarddetail-title">{post.title}</h2>
 
-        {/* 작성자 / 날짜 */}
+        {/* 정보 */}
         <div className="boarddetail-info">
           <span>작성자: {post.writer}</span>
           <span>작성일: {post.date}</span>
+          <span>조회수: {viewCount}</span>
         </div>
 
         {/* 내용 */}
@@ -80,14 +81,16 @@ const BoardDetail = () => {
           {post.content}
         </div>
 
-        {/* 버튼 영역 */}
+        {/* 댓글 영역 */}
+        <CommentSection postId={post.id} />
+
+        {/* 버튼 */}
         <div className="boarddetail-actions">
           <button onClick={() => navigate('/board')}>
             목록으로
           </button>
 
-          {/* ✅ 작성자일 때만 수정 / 삭제 버튼 표시 */}
-          {loginUser === post.writer && (
+          {canEdit && (
             <>
               <button
                 className="edit"
@@ -98,7 +101,28 @@ const BoardDetail = () => {
 
               <button
                 className="delete"
-                onClick={handleDelete}
+                onClick={() => {
+                  if (!confirm('삭제하시겠습니까?')) return;
+
+                  // 임시 삭제 처리
+                  const deleted = JSON.parse(
+                    localStorage.getItem('deletedPosts') || '[]'
+                  );
+                  deleted.push(post.id);
+
+                  localStorage.setItem(
+                    'deletedPosts',
+                    JSON.stringify(deleted)
+                  );
+
+                  // 관련 데이터 정리
+                  localStorage.removeItem(`editedPost-${id}`);
+                  localStorage.removeItem(`viewCount-${id}`);
+                  localStorage.removeItem(`comments-${post.id}`);
+
+                  alert('게시글이 삭제되었습니다. (임시)');
+                  navigate('/board');
+                }}
               >
                 삭제
               </button>
