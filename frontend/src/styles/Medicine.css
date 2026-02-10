@@ -1,0 +1,108 @@
+.medicine {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.page-description {
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* 검색 */
+.medicine-search {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0 30px;
+}
+
+.medicine-search input {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.medicine-search button {
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* 카드 레이아웃 */
+.medicine-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+
+  grid-auto-rows: 180px; /* 카드 높이 고정 */
+  min-height: calc(2 * 180px + 20px); /* 6개 카드 = 2줄 x 3개 + gap */
+}
+
+.medicine-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  transition: transform 0.15s ease;
+}
+
+.medicine-card:hover {
+  transform: translateY(-4px);
+}
+
+.medicine-card h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.effect {
+  font-size: 14px;
+  color: #2563eb;
+  margin-bottom: 12px;
+}
+
+.caution {
+  font-size: 13px;
+  background: #fff7ed;
+  color: #9a3412;
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+.no-data {
+  color: #94a3b8;
+  margin-top: 40px;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  border: none;
+  background: skyblue;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.pagination button.active {
+  font-weight: bold;
+  color: white;
+  background: #007bff;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
