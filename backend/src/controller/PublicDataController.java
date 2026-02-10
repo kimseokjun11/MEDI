@@ -23,8 +23,8 @@ public class PublicDataController {
      * 전체 공공데이터 조회 (샘플 데이터)
      */
     @GetMapping
-    public ResponseEntity<List<PublicData>> getAllPublicData() {
-        List<PublicData> list = publicDataService.getSampleData();
+    public ResponseEntity<List<PublicData>> getAllPublicData(String searchWord) {
+        List<PublicData> list = publicDataService.fetchFromApi(searchWord);
         return ResponseEntity.ok(list);
     }
 }
