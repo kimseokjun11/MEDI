@@ -1,63 +1,35 @@
 package model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * 게시판 모델
- */
 @Entity
-@Table(name = "board")
+@Getter @Setter
 public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(nullable = false)
+
     private String title;
     
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT") // 긴 내용 저장 가능
     private String content;
     
-    @Column(nullable = false)
-    private String writer;
+    private String writer; // 작성자 ID
     
-    @Column(name = "view_count")
-    private int viewCount;
-    
-    @Column(name = "created_at")
-    private String createdAt;
-    
-    @Column(name = "updated_at")
-    private String updatedAt;
+    private int viewCount = 0; // 조회수 (기본값 0)
 
-    public Board() {}
+    @CreationTimestamp
+    private LocalDateTime date;
 
-    public Board(String title, String content, String writer) {
-        this.title = title;
-        this.content = content;
-        this.writer = writer;
-    }
-
-    // Getter
-    public Long getId() { return id; }
-    public String getTitle() { return title; }
-    public String getContent() { return content; }
-    public String getWriter() { return writer; }
-    public int getViewCount() { return viewCount; }
-    public String getCreatedAt() { return createdAt; }
-    public String getUpdatedAt() { return updatedAt; }
-
-    // Setter
-    public void setId(Long id) { this.id = id; }
-    public void setTitle(String title) { this.title = title; }
-    public void setContent(String content) { this.content = content; }
-    public void setWriter(String writer) { this.writer = writer; }
-    public void setViewCount(int viewCount) { this.viewCount = viewCount; }
-    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
-    public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
-
-    @Override
-    public String toString() {
-        return "Board{id=" + id + ", title='" + title + "', writer='" + writer + "'}";
-    }
+    // 게시글이 지워지면 댓글도 같이 삭제 (Cascade)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    // 순환 참조 방지를 위해 댓글은 여기서 직접 JSON으로 뿌리지 않음 (필요시 DTO 사용 권장)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties("board") 
+    private List<Comment> comments = new ArrayList<>();
 }

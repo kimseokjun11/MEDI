@@ -1,73 +1,60 @@
 package controller;
 
 import model.Board;
-import service.BoardService;
+import repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * 게시판 Controller - REST API
- */
 @RestController
-@RequestMapping("/api/boards")
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/boards") // ⚠️ 프론트엔드 규칙: 복수형 'boards'
+@CrossOrigin(origins = "*")    // 리액트 접속 허용
 public class BoardController {
 
     @Autowired
-    private BoardService boardService;
+    private BoardRepository boardRepository;
 
-    /**
-     * 전체 게시글 조회 (페이징 적용됨)
-     * 사용법: /api/boards?page=0&size=10
-     */
+    // 목록 조회
     @GetMapping
-    public ResponseEntity<Page<Board>> getAllBoards(@PageableDefault(size = 10) Pageable pageable) {
-        // 기존의 List<Board> 반환하던 메서드는 지우고, 이 페이징 메서드만 남겨야 합니다!
-        return ResponseEntity.ok(boardService.getAll(pageable));
+    public List<Board> getAllBoards() {
+        // 최신순 정렬은 프론트에서 reverse() 하거나 여기서 정렬해서 보내도 됨
+        return boardRepository.findAll();
     }
 
-    /**
-     * 게시글 단건 조회
-     */
+    // 상세 조회
     @GetMapping("/{id}")
-    public ResponseEntity<Board> getBoardById(@PathVariable Long id) {
-        Board board = boardService.getById(id);
+    public Board getBoard(@PathVariable Long id) {
+        Board board = boardRepository.findById(id).orElse(null);
         if (board != null) {
-            return ResponseEntity.ok(board);
+            board.setViewCount(board.getViewCount() + 1); // 조회수 증가
+            boardRepository.save(board);
         }
-        return ResponseEntity.notFound().build();
+        return board;
     }
 
-    /**
-     * 게시글 생성
-     */
+    // 글쓰기
     @PostMapping
-    public ResponseEntity<Board> createBoard(@RequestBody Board board) {
-        Board saved = boardService.create(board);
-        return ResponseEntity.status(201).body(saved);
+    public Board createBoard(@RequestBody Board board) {
+        return boardRepository.save(board);
     }
 
-    /**
-     * 게시글 수정
-     */
+    // 수정
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateBoard(@PathVariable Long id, @RequestBody Board board) {
-        boardService.update(id, board);
-        return ResponseEntity.ok("{\"message\": \"Updated\"}");
+    public Board updateBoard(@PathVariable Long id, @RequestBody Board requestBoard) {
+        Board board = boardRepository.findById(id).orElse(null);
+        if (board != null) {
+            board.setTitle(requestBoard.getTitle());
+            board.setContent(requestBoard.getContent());
+            return boardRepository.save(board);
+        }
+        return null;
     }
 
-    /**
-     * 게시글 삭제
-     */
+    // 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBoard(@PathVariable Long id) {
-        boardService.delete(id);
-        return ResponseEntity.ok("{\"message\": \"Deleted\"}");
+    public String deleteBoard(@PathVariable Long id) {
+        boardRepository.deleteById(id);
+        return "Deleted";
     }
 }
