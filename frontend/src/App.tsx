@@ -1,45 +1,98 @@
-import { BrowserRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  NavLink,
+  useNavigate,
+  useLocation,
+} from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import Home from './pages/Home';
 import PublicData from './pages/PublicData';
 import Board from './pages/Board';
-import Signup from './pages/Signup';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import FindId from './pages/FindId';
-import BoardWrite from './pages/BoardWrite';
-import BoardDetail from './pages/BoardDetail';
-import BoardEdit from './pages/BoardEdit';
+
+import AdminDashBoard from './pages/admin/AdminDashBoard';
+import AdminBoard from './pages/admin/AdminBoard';
+import AdminMembers from './pages/admin/AdminMembers';
 
 import './App.css';
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
-  const navigate = useNavigate();
+  const [role, setRole] = useState<string | null>(null);
 
-  // ✅ 새로고침(F5) 시 로그인 상태 복구
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // ✅ admin 페이지 여부 (경로 기준)
+  const isAdminPage = location.pathname.startsWith('/admin');
+
+  // ✅ 새로고침 시 로그인 상태 복구
   useEffect(() => {
     const savedLogin = localStorage.getItem('isLogin');
+    const savedRole = localStorage.getItem('userRole');
+
     if (savedLogin === 'true') {
       setIsLogin(true);
+      setRole(savedRole);
     }
   }, []);
 
-  // ✅ 로그아웃 처리
+  // ✅ 로그아웃
   const handleLogout = () => {
-    localStorage.removeItem('isLogin');
+    localStorage.clear();
     setIsLogin(false);
+    setRole(null);
     navigate('/');
   };
 
   return (
     <div className="app">
-      {/* ✅ 로그인 후에만 상단 바 표시 */}
-      {isLogin && (
-        <nav className="top-nav">
+      {/* ================= 관리자 네비 ================= */}
+      {isLogin && isAdminPage && (
+        <nav className="admin-nav">
           <div className="logo">
-            <NavLink to="/home">💊 MEDI</NavLink>
+            💊 MEDI <span className="admin-badge">관리자</span>
           </div>
+
+          <div className="nav-links">
+            <NavLink
+              to="/admin"
+              end
+              className={({ isActive }) => (isActive ? 'active' : '')}
+            >
+              대시보드
+            </NavLink>
+
+            <NavLink
+              to="/admin/board"
+              className={({ isActive }) => (isActive ? 'active' : '')}
+            >
+              게시판 관리
+            </NavLink>
+
+            <NavLink
+              to="/admin/members"
+              className={({ isActive }) => (isActive ? 'active' : '')}
+            >
+              회원 관리
+            </NavLink>
+
+            <button className="logout-btn" onClick={handleLogout}>
+              로그아웃
+            </button>
+          </div>
+        </nav>
+      )}
+
+      {/* ================= 일반 유저 네비 ================= */}
+      {isLogin && !isAdminPage && (
+        <nav className="top-nav">
+          <div className="logo">💊 MEDI</div>
 
           <div className="nav-links">
             <NavLink to="/home">홈</NavLink>
@@ -54,27 +107,27 @@ function App() {
         </nav>
       )}
 
+      {/* ================= 라우팅 ================= */}
       <Routes>
-        {/* 시작 페이지 (로그인) */}
+        {/* 로그인 / 회원 */}
         <Route path="/" element={<Login setIsLogin={setIsLogin} />} />
-
-        {/* 로그인 관련 */}
         <Route path="/signup" element={<Signup />} />
         <Route path="/find-id" element={<FindId />} />
 
-        {/* 로그인 후 페이지 */}
+        {/* 일반 유저 */}
         <Route path="/home" element={<Home />} />
         <Route path="/public-data" element={<PublicData />} />
         <Route path="/board" element={<Board />} />
-        <Route path="/board/write" element={<BoardWrite />} />
-        <Route path="/board/:id" element={<BoardDetail />} />
-        <Route path="/board/edit/:id" element={<BoardEdit />} />
+
+        {/* 관리자 */}
+        <Route path="/admin" element={<AdminDashBoard />} />
+        <Route path="/admin/board" element={<AdminBoard />} />
+        <Route path="/admin/members" element={<AdminMembers />} />
       </Routes>
     </div>
   );
 }
 
-// ✅ BrowserRouter 분리 (권장 구조)
 export default function AppWrapper() {
   return (
     <BrowserRouter>
