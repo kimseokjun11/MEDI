@@ -16,4 +16,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     
     // 🔴 existsByLoginId -> existsByUserid 로 변경
     boolean existsByUserid(String userid);
+
+    //일반 사용자 수만 카운트(관리자 제외)
+    long countByRole(String role);
 }

@@ -22,7 +22,7 @@ const Login = ({ setIsLogin }: LoginProps) => {
     }
 
     try {
-      // 2. 백엔드 통신 (이제 하드코딩 없음!)
+      // 2. 백엔드 통신
       const response = await axios.post('http://localhost:8080/api/members/login', {
         userid: userid,
         password: password
@@ -36,18 +36,16 @@ const Login = ({ setIsLogin }: LoginProps) => {
         // 로컬 스토리지에 정보 저장
         localStorage.setItem('isLogin', 'true');
         localStorage.setItem('loginUser', member.userid);
-        localStorage.setItem('userRole', member.role); // ⭐ 권한 저장 ('USER' or 'ADMIN')
+        localStorage.setItem('userRole', member.role); 
 
         setIsLogin(true);
         setError('');
 
-        // 4. 권한에 따라 이동하는 곳이 다름!
+        // 4. 권한에 따라 이동하는 곳이 다름
         if (member.role === 'ADMIN') {
-          alert('관리자님 환영합니다! 👨‍💼');
           navigate('/admin'); // 관리자 대시보드로
         } else {
-          alert(`${member.userid}님 환영합니다! 👋`);
-          navigate('/home');  // 일반 홈으로
+          navigate('/home');  // 일반 유저 홈으로
         }
       }
     } catch (err) {

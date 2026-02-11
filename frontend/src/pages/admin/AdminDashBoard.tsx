@@ -9,7 +9,8 @@ const AdminDashboard = () => {
   // 통계 데이터를 저장할 상태변수
   const [stats, setStats] = useState({
     memberCount: 0,
-    boardCount: 0
+    adminBoardCount: 0,
+    userBoardCount: 0
   });
 
   // 화면 켜지자마자 데이터 가져오기
@@ -28,13 +29,16 @@ const AdminDashboard = () => {
       <div className="admin-stats">
         <div className="stat-card">
           <p>총 회원 수</p>
-          {/* 👇 진짜 데이터 연결 */}
+          {/* 진짜 데이터 연결 */}
           <h3>{stats.memberCount}명</h3>
         </div>
         <div className="stat-card">
           <p>총 게시글</p>
-          {/* 👇 진짜 데이터 연결 */}
-          <h3>{stats.boardCount}개</h3>
+          {/* 진짜 데이터 연결 */}
+          <h3>{stats.adminBoardCount + stats.userBoardCount}개</h3>
+          <span style = {{ fontSize: '14px', color: '#6b7280'}}>
+            관리자 {stats.adminBoardCount} / 일반 {stats.userBoardCount}
+          </span>
         </div>
         <div className="stat-card">
           <p>시스템 상태</p>

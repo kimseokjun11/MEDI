@@ -4,8 +4,10 @@ import model.Board;
 import repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 @RestController
 @RequestMapping("/api/boards") // ⚠️ 프론트엔드 규칙: 복수형 'boards'
@@ -15,11 +17,20 @@ public class BoardController {
     @Autowired
     private BoardRepository boardRepository;
 
-    // 목록 조회
     @GetMapping
-    public List<Board> getAllBoards() {
-        // 최신순 정렬은 프론트에서 reverse() 하거나 여기서 정렬해서 보내도 됨
-        return boardRepository.findAll();
+    public Page<Board> getBoards(
+            @RequestParam(defaultValue = "0") int page,       // 몇 번째 페이지? (기본 0)
+            @RequestParam(defaultValue = "") String keyword   // 검색어 (기본 빈칸)
+    ) {
+        // 1. 페이지 설정: 한 페이지에 10개씩, ID 역순(최신순)으로 정렬
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+
+        // 2. 검색어가 있으면 검색, 없으면 전체 조회
+        if (keyword.isEmpty()) {
+            return boardRepository.findAll(pageable);
+        } else {
+            return boardRepository.findByTitleContaining(keyword, pageable);
+        }
     }
 
     // 상세 조회

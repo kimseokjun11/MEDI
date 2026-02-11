@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import CommentSection from '../components/CommentSection'; // 댓글 컴포넌트
+import CommentSection from '../components/CommentSection';
 import '../styles/BoardDetail.css';
 
 interface BoardData {
@@ -21,7 +21,7 @@ const BoardDetail = () => {
 
   const [post, setPost] = useState<BoardData | null>(null);
 
-  // ✅ 게시글 내용 가져오기
+  // 게시글 내용 불러오기
   useEffect(() => {
     axios.get(`http://localhost:8080/api/boards/${id}`)
       .then(response => setPost(response.data))
@@ -32,7 +32,7 @@ const BoardDetail = () => {
       });
   }, [id, navigate]);
 
-  // ✅ 삭제 기능
+  // 삭제
   const handleDelete = async () => {
     if (!confirm('정말 삭제하시겠습니까?')) return;
     try {
@@ -47,7 +47,7 @@ const BoardDetail = () => {
 
   if (!post) return <div className="boarddetail-wrapper">로딩 중...</div>;
 
-  // 🔐 수정/삭제 권한 체크 (본인 이거나 관리자면 가능)
+  // 수정/삭제 권한 설정(본인 + 관리자)
   const canEdit = (loginUser === post.writer) || (userRole === 'ADMIN');
 
   return (
@@ -60,12 +60,12 @@ const BoardDetail = () => {
           <span>조회수: {post.viewCount}</span>
         </div>
         
-        {/* 본문 내용 (줄바꿈 처리 포함) */}
+        {/* 본문 내용 */}
         <div className="boarddetail-content" style={{ whiteSpace: 'pre-wrap' }}>
           {post.content}
         </div>
 
-        {/* 👇 댓글 영역 연결 */}
+        {/*  댓글 연결 */}
         <CommentSection postId={post.id} />
 
         <div className="boarddetail-actions">

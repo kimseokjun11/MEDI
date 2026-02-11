@@ -24,17 +24,23 @@ public class AdminController {
     // 1️⃣ 대시보드용 통계 데이터 (총 회원 수, 총 게시글 수)
     @GetMapping("/stats")
     public Map<String, Long> getDashboardStats() {
+
         Map<String, Long> stats = new HashMap<>();
-        
-        // DB에서 개수만 쏙 세어오기 (count 함수 이용)
-        long memberCount = memberRepository.count();
-        long boardCount = boardRepository.count();
+
+        // 전체 회원 수 (ADMIN 제외)
+        long memberCount = memberRepository.countByRole("USER");
+
+        // 게시글 수 분리
+        long adminBoardCount = boardRepository.countBoardsByWriterRole("ADMIN");
+        long userBoardCount = boardRepository.countBoardsByWriterRole("USER");
 
         stats.put("memberCount", memberCount);
-        stats.put("boardCount", boardCount);
-        
+        stats.put("adminBoardCount", adminBoardCount);
+        stats.put("userBoardCount", userBoardCount);
+
         return stats;
     }
+
 
     // 2️⃣ 회원 목록 전체 조회 (관리자용)
     @GetMapping("/members")

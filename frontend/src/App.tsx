@@ -14,6 +14,8 @@ import Board from './pages/Board';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FindId from './pages/FindId';
+import Medicine from './pages/Medicine';               
+import MedicineDetail from './pages/MedicineDetail';
 
 import AdminDashBoard from './pages/admin/AdminDashBoard';
 import AdminBoard from './pages/admin/AdminBoard';
@@ -121,6 +123,8 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/public-data" element={<PublicData />} />
         <Route path="/board" element={<Board />} />
+        <Route path="/medicine" element={<Medicine />} />         
+        <Route path="/medicine/:id" element={<MedicineDetail />} /> 
 
         <Route path="/board/write" element={<BoardWrite />} />
         <Route path="/board/:id" element={<BoardDetail />} />

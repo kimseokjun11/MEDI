@@ -13,31 +13,62 @@ interface BoardData {
 
 const Board = () => {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState<BoardData[]>([]);
 
-  // ✅ 서버에서 게시글 목록 가져오기
+  const [posts, setPosts] = useState<BoardData[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const [keyword, setKeyword] = useState('');        // 입력용
+  const [searchKeyword, setSearchKeyword] = useState(''); // 실제 검색용
+
+  // 🔥 서버 요청은 searchKeyword가 바뀔 때만 실행
   useEffect(() => {
-    axios.get('http://localhost:8080/api/boards')
-      .then(response => {
-        // 최신글(ID가 큰 순서)이 위로 오게 정렬
-        const sorted = response.data.sort((a: BoardData, b: BoardData) => b.id - a.id);
-        setPosts(sorted);
+    axios
+      .get('http://localhost:8080/api/boards', {
+        params: {
+          page: page,
+          keyword: searchKeyword,
+        },
       })
-      .catch(error => {
-        console.error("게시글 로딩 실패", error);
+      .then((response) => {
+        setPosts(response.data.content);
+        setTotalPages(response.data.totalPages);
+      })
+      .catch((error) => {
+        console.error('게시글 로딩 실패', error);
       });
-  }, []);
+  }, [page, searchKeyword]);
+
+  const handleSearch = () => {
+    setPage(0);
+    setSearchKeyword(keyword);
+  };
 
   return (
     <div className="board-wrapper">
       <div className="board-header">
         <h2>📋 게시판</h2>
+
         <div className="board-actions">
-          {/* 검색 기능은 나중에 구현, 일단 UI만 유지 */}
-          <input className="board-search" placeholder="제목 또는 작성자 검색" />
-          <button className="board-btn">검색</button>
-          
-          <button className="board-btn primary" onClick={() => navigate('/board/write')}>
+          <input
+            className="board-search"
+            placeholder="제목 검색"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
+
+          {/* 🔥 파란색 버튼 */}
+          <button
+            className="board-btn primary"
+            onClick={handleSearch}
+          >
+            검색
+          </button>
+
+          <button
+            className="board-btn primary"
+            onClick={() => navigate('/board/write')}
+          >
             글쓰기
           </button>
         </div>
@@ -53,32 +84,55 @@ const Board = () => {
             <th>조회수</th>
           </tr>
         </thead>
+
         <tbody>
           {posts.length === 0 ? (
             <tr>
-              <td colSpan={5} style={{textAlign:'center', padding:'30px'}}>
-                게시글이 없습니다. 첫 글을 남겨보세요!
+              <td colSpan={5} style={{ textAlign: 'center', padding: '30px' }}>
+                게시글이 없습니다.
               </td>
             </tr>
           ) : (
             posts.map((post, index) => (
               <tr key={post.id}>
-                {/* 🔢 보여주는 번호는 깔끔하게 계산 (전체개수 - 현재인덱스) */}
-                <td>{posts.length - index}</td>
-                
-                <td className="board-title" onClick={() => navigate(`/board/${post.id}`)}>
+                <td>{index + 1 + page * 10}</td>
+
+                <td
+                  className="board-title"
+                  onClick={() => navigate(`/board/${post.id}`)}
+                >
                   {post.title}
-                  {/* 댓글 수 표시하고 싶으면 여기에 추가 가능 */}
                 </td>
+
                 <td>{post.writer}</td>
-                {/* 날짜 깔끔하게 자르기 (YYYY-MM-DD) */}
-                <td>{post.date ? post.date.substring(0, 10) : '-'}</td>
+                <td>{post.date?.substring(0, 10)}</td>
                 <td>{post.viewCount}</td>
               </tr>
             ))
           )}
         </tbody>
       </table>
+
+      {/* 페이지 버튼 */}
+      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i}
+            onClick={() => setPage(i)}
+            style={{
+              margin: '0 5px',
+              padding: '6px 10px',
+              background: page === i ? '#2563eb' : '#e5e7eb',
+              color: page === i ? 'white' : '#333',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+            }}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
