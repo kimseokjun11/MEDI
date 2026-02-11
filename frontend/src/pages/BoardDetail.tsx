@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import CommentSection from '../components/CommentSection';
+import CommentSection from '../components/CommentSection'; // 댓글 컴포넌트
 import '../styles/BoardDetail.css';
 
 interface BoardData {
@@ -16,17 +16,23 @@ interface BoardData {
 const BoardDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const loginUser = localStorage.getItem('loginUser');
+  const loginUser = localStorage.getItem('loginUser'); // 현재 로그인한 사람
+  const userRole = localStorage.getItem('userRole');   // 관리자 여부 확인용
+
   const [post, setPost] = useState<BoardData | null>(null);
 
-  // ✅ 서버에서 게시글 1개 가져오기
+  // ✅ 게시글 내용 가져오기
   useEffect(() => {
     axios.get(`http://localhost:8080/api/boards/${id}`)
       .then(response => setPost(response.data))
-      .catch(() => alert('존재하지 않는 게시글입니다.'));
-  }, [id]);
+      .catch(error => {
+        console.error(error);
+        alert('존재하지 않거나 삭제된 게시글입니다.');
+        navigate('/board');
+      });
+  }, [id, navigate]);
 
-  // ✅ 삭제하기 (진짜 삭제)
+  // ✅ 삭제 기능
   const handleDelete = async () => {
     if (!confirm('정말 삭제하시겠습니까?')) return;
     try {
@@ -34,11 +40,15 @@ const BoardDetail = () => {
       alert('삭제되었습니다.');
       navigate('/board');
     } catch (error) {
-      alert('삭제 실패!');
+      console.error(error);
+      alert('삭제 실패! 권한이 없거나 오류가 발생했습니다.');
     }
   };
 
   if (!post) return <div className="boarddetail-wrapper">로딩 중...</div>;
+
+  // 🔐 수정/삭제 권한 체크 (본인 이거나 관리자면 가능)
+  const canEdit = (loginUser === post.writer) || (userRole === 'ADMIN');
 
   return (
     <div className="boarddetail-wrapper">
@@ -49,16 +59,19 @@ const BoardDetail = () => {
           <span>날짜: {post.date ? post.date.substring(0, 10) : ''}</span>
           <span>조회수: {post.viewCount}</span>
         </div>
-        <div className="boarddetail-content">
+        
+        {/* 본문 내용 (줄바꿈 처리 포함) */}
+        <div className="boarddetail-content" style={{ whiteSpace: 'pre-wrap' }}>
           {post.content}
         </div>
 
-        {/* 댓글 컴포넌트 */}
+        {/* 👇 댓글 영역 연결 */}
         <CommentSection postId={post.id} />
 
         <div className="boarddetail-actions">
           <button onClick={() => navigate('/board')}>목록으로</button>
-          {loginUser === post.writer && (
+          
+          {canEdit && (
             <>
               <button className="edit" onClick={() => navigate(`/board/edit/${post.id}`)}>
                 수정

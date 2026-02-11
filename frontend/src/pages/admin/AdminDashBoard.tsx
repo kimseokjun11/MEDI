@@ -1,9 +1,25 @@
-// src/pages/admin/AdminDashboard.tsx
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './../../styles/Admin.css';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  
+  // 통계 데이터를 저장할 상태변수
+  const [stats, setStats] = useState({
+    memberCount: 0,
+    boardCount: 0
+  });
+
+  // 화면 켜지자마자 데이터 가져오기
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/admin/stats')
+      .then(res => {
+        setStats(res.data); // 받아온 데이터 { memberCount: 5, boardCount: 3 } 저장
+      })
+      .catch(err => console.error("통계 로딩 실패", err));
+  }, []);
 
   return (
     <div className="admin-page">
@@ -12,15 +28,17 @@ const AdminDashboard = () => {
       <div className="admin-stats">
         <div className="stat-card">
           <p>총 회원 수</p>
-          <h3>42명</h3>
+          {/* 👇 진짜 데이터 연결 */}
+          <h3>{stats.memberCount}명</h3>
         </div>
         <div className="stat-card">
           <p>총 게시글</p>
-          <h3>128개</h3>
+          {/* 👇 진짜 데이터 연결 */}
+          <h3>{stats.boardCount}개</h3>
         </div>
         <div className="stat-card">
-          <p>오늘 가입자</p>
-          <h3>3명</h3>
+          <p>시스템 상태</p>
+          <h3 style={{color:'#10b981'}}>정상 운영 중</h3>
         </div>
       </div>
 
