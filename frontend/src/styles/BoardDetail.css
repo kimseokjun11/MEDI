@@ -76,3 +76,65 @@
 .boarddetail-actions button:hover {
   opacity: 0.9;
 }
+
+.secret-wrapper {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f1f5f9;
+}
+
+.secret-card {
+  background: white;
+  padding: 50px 60px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.secret-icon {
+  font-size: 50px;
+  margin-bottom: 20px;
+}
+
+.secret-card h2 {
+  margin-bottom: 10px;
+  font-size: 24px;
+  color: #1e293b;
+}
+
+.secret-card p {
+  color: #64748b;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.secret-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secret-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+/* 부드러운 등장 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

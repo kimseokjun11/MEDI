@@ -16,6 +16,9 @@ import Signup from './pages/Signup';
 import FindId from './pages/FindId';
 import Medicine from './pages/Medicine';               
 import MedicineDetail from './pages/MedicineDetail';
+import QnaList from './pages/QnaList';
+import QnaWrite from './pages/QnaWrite';
+import QnaDetail from './pages/QnaDetail';
 
 import AdminDashBoard from './pages/admin/AdminDashBoard';
 import AdminBoard from './pages/admin/AdminBoard';
@@ -87,6 +90,14 @@ function App() {
               회원 관리
             </NavLink>
 
+            <NavLink
+              to="/admin/qna"
+              className={({ isActive }) => (isActive ? 'active' : '')}
+            >
+              Q&A 관리
+            </NavLink>
+
+
             <button className="logout-btn" onClick={handleLogout}>
               로그아웃
             </button>
@@ -104,6 +115,7 @@ function App() {
             <NavLink to="/public-data">공지사항</NavLink>
             <NavLink to="/board">게시판</NavLink>
             <NavLink to="/medicine">약정보</NavLink>
+            <NavLink to="/qna">Q&A</NavLink>
 
             <button className="logout-btn" onClick={handleLogout}>
               로그아웃
@@ -130,10 +142,15 @@ function App() {
         <Route path="/board/:id" element={<BoardDetail />} />
         <Route path="/board/edit/:id" element={<BoardEdit />} />
 
+        <Route path="/qna" element={<QnaList />} />
+        <Route path="/qna/write" element={<QnaWrite />} />
+        <Route path="/qna/:id" element={<QnaDetail />} />
+
         {/* 관리자 */}
         <Route path="/admin" element={<AdminDashBoard />} />
         <Route path="/admin/board" element={<AdminBoard />} />
         <Route path="/admin/members" element={<AdminMembers />} />
+        {/* <Route path="/admin/qna" element={<AdminQna />} /> */}
       </Routes>
     </div>
   );
