@@ -82,8 +82,10 @@ export default function KakaoMap() {
     }
   }, []);
 
-  // ✅ 약국 불러오기
+  // ✅ 약국 검색
   function fetchPharmacies() {
+    if (!mapRef.current) return;
+
     clearMarkers();
 
     let url = `http://localhost:8080/api/pharmacies?pageNo=1&numOfRows=50`;
@@ -95,16 +97,33 @@ export default function KakaoMap() {
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
-        if (!data.items) return;
+        if (!data.items || data.items.length === 0) {
+          console.warn("⚠ 검색 결과 없음");
+          return;
+        }
+
+        let firstValidPosition: any = null;
 
         data.items.forEach((pharmacy: any) => {
           const plat = Number(pharmacy.wgs84Lat);
           const plon = Number(pharmacy.wgs84Lon);
-          if (isNaN(plat) || isNaN(plon)) return;
+
+          // ❗ 좌표 방어
+          if (isNaN(plat) || isNaN(plon)) {
+            console.warn("⚠ 좌표 오류:", pharmacy.dutyName);
+            return;
+          }
+
+          const position = new window.kakao.maps.LatLng(plat, plon);
+
+          // ✅ 첫 유효 좌표 저장
+          if (!firstValidPosition) {
+            firstValidPosition = position;
+          }
 
           const marker = new window.kakao.maps.Marker({
             map: mapRef.current,
-            position: new window.kakao.maps.LatLng(plat, plon),
+            position,
           });
 
           markersRef.current.push(marker);
@@ -135,16 +154,11 @@ export default function KakaoMap() {
                 }
               </div>
             `,
-            
           });
 
           window.kakao.maps.event.addListener(marker, "click", () => {
-            const moveLatLon = new window.kakao.maps.LatLng(plat, plon);
+            mapRef.current.panTo(position);
 
-            // ✅ 🔥 지도 자동 이동 (부드럽게)
-            mapRef.current.panTo(moveLatLon);
-
-            // 🔥 기존 팝업 닫기
             if (openInfoRef.current) {
               openInfoRef.current.close();
             }
@@ -152,7 +166,6 @@ export default function KakaoMap() {
             infowindow.open(mapRef.current, marker);
             openInfoRef.current = infowindow;
 
-            // 🔥 닫기 버튼 연결
             setTimeout(() => {
               const closeBtn = document.querySelector(".popup-close");
               closeBtn?.addEventListener("click", () => {
@@ -162,6 +175,13 @@ export default function KakaoMap() {
             }, 0);
           });
         });
+
+        // ✅ 검색 후 지도 이동 (핵심)
+        if (firstValidPosition) {
+          mapRef.current.panTo(firstValidPosition);
+        } else {
+          console.warn("⚠ 유효 좌표 없음");
+        }
       });
   }
 
@@ -220,12 +240,10 @@ export default function KakaoMap() {
           onChange={(e) => setQn(e.target.value)}
         />
 
-        <button onClick={() => fetchPharmacies()}>검색</button>
+        <button onClick={fetchPharmacies}>검색</button>
       </div>
 
       <div id="map" className="map-container" />
-      
     </div>
-    
   );
 }
