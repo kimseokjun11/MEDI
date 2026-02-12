@@ -14,45 +14,43 @@ const Login = ({ setIsLogin }: LoginProps) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = async () => {
-    // 1. 입력 확인
-    if (!userid || !password) {
-      setError('아이디와 비밀번호를 입력해주세요.');
-      return;
-    }
+const handleLogin = async () => {
+  if (!userid || !password) {
+    setError('아이디와 비밀번호를 입력해주세요.');
+    return;
+  }
 
-    try {
-      // 2. 백엔드 통신
-      const response = await axios.post('http://localhost:8080/api/members/login', {
-        userid: userid,
-        password: password
-      });
+  try {
+    const response = await axios.post('http://localhost:8080/api/members/login', {
+      userid: userid,
+      password: password
+    });
 
-      // 3. 로그인 성공 시 처리
-      if (response.status === 200 && response.data) {
-        const member = response.data; // 백엔드에서 받은 멤버 정보
-        console.log('로그인 성공:', member);
+    if (response.status === 200 && response.data) {
+      const member = response.data; 
 
-        // 로컬 스토리지에 정보 저장
-        localStorage.setItem('isLogin', 'true');
-        localStorage.setItem('loginUser', member.userid);
-        localStorage.setItem('userRole', member.role); 
+      // ✅ 키값을 'loginUser'로 유지하여 게시판 등 다른 페이지와 연동합니다.
+      localStorage.setItem('isLogin', 'true');
+      localStorage.setItem('loginUser', member.userid); 
+      localStorage.setItem('userRole', member.role);    
 
-        setIsLogin(true);
-        setError('');
+      setIsLogin(true);
+      setError('');
 
-        // 4. 권한에 따라 이동하는 곳이 다름
-        if (member.role === 'ADMIN') {
-          navigate('/admin'); // 관리자 대시보드로
-        } else {
-          navigate('/home');  // 일반 유저 홈으로
-        }
+// ✅ [추가] 관리자 여부에 따른 리다이렉트 분기
+      if (member.role === 'ADMIN') {
+        // 관리자라면 관리자 대시보드로 이동
+        navigate('/admin'); 
+      } else {
+        // 일반 유저라면 홈으로 이동
+        navigate('/home'); 
       }
-    } catch (err) {
-      console.error(err);
-      setError('아이디 또는 비밀번호가 틀렸습니다!');
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setError('아이디 또는 비밀번호가 틀렸습니다!');
+  }
+};
 
   return (
     <div className="login-wrapper">
@@ -82,6 +80,9 @@ const Login = ({ setIsLogin }: LoginProps) => {
         <div className="login-links">
           <button className="login-link" onClick={() => navigate('/find-id')}>
             아이디 찾기
+          </button>
+          <button className="login-link" onClick={() => navigate('/find-password')}>
+            비밀번호 찾기
           </button>
           <button className="login-link" onClick={() => navigate('/signup')}>
             회원가입

@@ -1,0 +1,118 @@
+/* ================= 관리자 Q&A 페이지 ================= */
+
+.admin-qna-wrapper {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+/* 제목 */
+.admin-qna-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
+
+/* 검색 영역 */
+.admin-qna-search {
+  margin-bottom: 25px;
+}
+
+.admin-qna-search input {
+  padding: 10px 14px;
+  width: 280px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  transition: 0.2s;
+}
+
+.admin-qna-search input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* 테이블 */
+.admin-qna-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.admin-qna-table thead {
+  background: #f3f4f6;
+}
+
+.admin-qna-table th {
+  padding: 14px;
+  font-weight: 600;
+  text-align: center;
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-qna-table td {
+  padding: 14px;
+  text-align: center;
+  font-size: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* 제목 hover */
+.admin-qna-title-cell {
+  cursor: pointer;
+  color: #2563eb;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.admin-qna-title-cell:hover {
+  text-decoration: underline;
+}
+
+/* 상태 뱃지 */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-done {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-wait {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* 페이지 버튼 */
+.admin-qna-pagination {
+  margin-top: 25px;
+  text-align: center;
+}
+
+.admin-qna-pagination button {
+  margin: 0 5px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #e5e7eb;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.admin-qna-pagination button.active {
+  background: #2563eb;
+  color: white;
+}
+
+.admin-qna-pagination button:hover {
+  background: #2563eb;
+  color: white;
+}

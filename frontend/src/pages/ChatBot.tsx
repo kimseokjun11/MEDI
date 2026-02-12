@@ -11,24 +11,25 @@ export default function ChatBot() {
   const fetchDrugInfo = async (drugName: string) => {
   try {
     const res = await fetch(
-      `http://localhost:8080/api/drug-info?itemName=${encodeURIComponent(drugName)}`
+      `http://localhost:8080/api/drug?itemName=${encodeURIComponent(drugName)}`
     );
-    const data = await res.json(); // JSON으로 바로 받음
 
-    const item = data.body.items[0]; // 첫 번째 약 정보 가져오기
-    if (!item) return "정보가 없습니다 😢";
+    const data = await res.json(); // 👉 이제 배열로 옴
+
+    if (!data || data.length === 0) {
+      return "정보가 없습니다 😢";
+    }
+
+    const item = data[0]; // 🔥 여기 수정
 
     return `
 📌 ${item.itemName} 정보
 
+🏢 제조사
+${item.entpName ?? "정보 없음"}
+
 💊 효능
 ${item.efcyQesitm ?? "정보 없음"}
-
-📖 사용법
-${item.useMethodQesitm ?? "정보 없음"}
-
-⚠️ 주의사항
-${item.atpnQesitm ?? "정보 없음"}
     `;
   } catch (error) {
     return "약 정보를 불러오지 못했습니다 😢";

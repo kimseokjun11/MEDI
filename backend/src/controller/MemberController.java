@@ -5,7 +5,9 @@ import repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import service.MailService;
+import java.util.Map;
+import java.util.Optional; 
 /**
  * 회원 관련 요청을 처리하는 컨트롤러
  * (기존 기능 유지 + 관리자 권한 기능 연동)
@@ -15,6 +17,74 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*") 
 public class MemberController {
 
+
+    // 1. 내 정보 가져오기 (마이페이지용)
+@GetMapping("/me")
+public ResponseEntity<?> getMyInfo(@RequestParam String userid) {
+    Optional<Member> member = memberRepository.findByUserid(userid);
+    
+    // Optional 체이닝 대신 if-else로 타입을 확실히 분리
+    if (member.isPresent()) {
+        return ResponseEntity.ok(member.get()); // ResponseEntity<Member> 반환
+    } else {
+        return ResponseEntity.status(404).body("사용자를 찾을 수 없습니다."); // ResponseEntity<String> 반환
+    }
+}
+
+// 2. 정보 수정 (비밀번호, 이메일 포함)
+@PutMapping("/update")
+public ResponseEntity<?> updateMember(@RequestBody Map<String, String> payload) {
+    String userid = payload.get("userid");
+    String newPassword = payload.get("password");
+    String email = payload.get("email");
+
+    Optional<Member> memberOpt = memberRepository.findByUserid(userid);
+    
+    if (memberOpt.isPresent()) {
+        Member member = memberOpt.get();
+        
+        // 값이 존재할 때만 업데이트
+        if (newPassword != null && !newPassword.isEmpty()) {
+            member.setPassword(newPassword);
+        }
+        if (email != null && !email.isEmpty()) {
+            member.setEmail(email);
+        }
+        
+        memberRepository.save(member);
+        return ResponseEntity.ok("정보가 수정되었습니다.");
+    } else {
+        return ResponseEntity.status(404).body("사용자를 찾을 수 없습니다.");
+    }
+}   
+    @Autowired
+    private MailService mailService;
+
+    // ✅ 비밀번호 찾기 (아이디+이메일 입력 -> 임시비번 메일 발송)
+    @PostMapping("/find-password")
+    public ResponseEntity<?> findPassword(@RequestBody Map<String, String> payload) {
+        String userid = payload.get("userid");
+        String email = payload.get("email");
+
+        Member member = memberRepository.findByUseridAndEmail(userid, email).orElse(null);
+
+        if (member != null) {
+            // 1. 임시 비밀번호 생성
+            String tempPw = mailService.getTempPassword();
+            
+            // 2. DB 업데이트
+            member.setPassword(tempPw); 
+            memberRepository.save(member);
+
+            // 3. 메일 발송
+            mailService.sendMail(email, "[MEDI] 임시 비밀번호 안내", "임시 비밀번호: " + tempPw + "\n로그인 후 변경해주세요.");
+            
+            return ResponseEntity.ok("임시 비밀번호가 발송되었습니다.");
+        } else {
+            return ResponseEntity.status(404).body("정보가 일치하지 않습니다.");
+        }
+    }
+    
     @Autowired
     private MemberRepository memberRepository;
 
@@ -80,4 +150,6 @@ public class MemberController {
                     .body("해당 이메일로 가입된 회원이 없습니다.");
         }
     }
+
+    
 }

@@ -19,4 +19,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     //일반 사용자 수만 카운트(관리자 제외)
     long countByRole(String role);
+
+    // 아이디와 이메일로 회원 찾기
+    Optional<Member> findByUseridAndEmail(String userid, String email);
 }

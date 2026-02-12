@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Medicine.css';
+import TopToggle from "../pages/TopToggle";
 
 interface PublicData {
   sttemntNo: string;
@@ -18,59 +19,72 @@ const parsePurpose = (desc?: string) => {
 const Medicine = () => {
   const [medicineList, setMedicineList] = useState<PublicData[]>([]);
   const [keyword, setKeyword] = useState('');
+  const [filteredList, setFilteredList] = useState<PublicData[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const itemsPerPage = 6;
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch('/api/medicines');
-        const data: PublicData[] = await res.json();
-        setMedicineList(data || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
-  /* 🔥 검색 필터링 */
-  const filteredList = medicineList.filter((item) =>
-    item.title?.toLowerCase().includes(keyword.toLowerCase())
-  );
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/medicines');
+      const data: PublicData[] = await res.json();
 
-  /* 🔥 페이지네이션은 filteredList 기준 */
+      setMedicineList(data || []);
+      setFilteredList(data || []);   // ✅ 초기 전체 표시
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ✅ 검색 버튼 클릭 */
+  const searchMedicine = () => {
+    if (!keyword.trim()) {
+      setFilteredList(medicineList);  // 검색어 없으면 전체 복구
+    } else {
+      const result = medicineList.filter(item =>
+        item.title?.toLowerCase().includes(keyword.toLowerCase())
+      );
+      setFilteredList(result);
+    }
+
+    setCurrentPage(1); // ✅ 검색 시 1페이지
+  };
+
+  /* ✅ 페이징 */
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredList.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
+  const currentItems = filteredList.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredList.length / itemsPerPage);
-
-  /* 🔥 검색어 바뀌면 1페이지로 */
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [keyword]);
 
   return (
     <div className="medicine">
-      <h1>건강기능식품 정보</h1>
 
+      {/* ✅ 상단 */}
+      <div className="medicine-top">
+        <h1>건강기능식품 정보</h1>
+        <TopToggle />
+      </div>
+
+      {/* ✅ 검색창 + 버튼 */}
       <div className="medicine-search">
         <input
           type="text"
           placeholder="제품명을 검색하세요"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && searchMedicine()}
         />
+        <button onClick={searchMedicine}>검색</button>
       </div>
 
       {loading && <p className="no-data">🔍 불러오는 중...</p>}
@@ -99,7 +113,7 @@ const Medicine = () => {
         <div className="pagination">
           <button
             disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
+            onClick={() => setCurrentPage(prev => prev - 1)}
           >
             이전
           </button>
@@ -116,7 +130,7 @@ const Medicine = () => {
 
           <button
             disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => prev + 1)}
+            onClick={() => setCurrentPage(prev => prev + 1)}
           >
             다음
           </button>
