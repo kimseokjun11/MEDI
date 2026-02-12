@@ -333,7 +333,7 @@ function Home() {
             <div>
               <h3 style={{ margin: 0 }}>🎯 추천 영양제</h3>
               <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: "14px" }}>
-                하드코딩 추천 · 연령대별
+                추천 · 연령대별
               </p>
             </div>
 
