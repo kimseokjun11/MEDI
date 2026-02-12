@@ -74,3 +74,8 @@
   border: none;
   padding: 0 12px;
 }
+
+.chatbot-messages {
+  overflow-y: auto;
+  height: 400px;
+}

@@ -24,6 +24,7 @@ import BoardEdit from './pages/BoardEdit';
 import FindPassword from './pages/FindPassword';
 import MyPage from './pages/MyPage';
 import EditProfile from './pages/EditProfile';
+import KakaoMap from './pages/KakaoMap';
 import QnaList from './pages/QnaList';
 import QnaWrite from './pages/QnaWrite';
 import QnaDetail from './pages/QnaDetail';
@@ -105,6 +106,8 @@ function App() {
               Q&A 관리
             </NavLink>
 
+            
+
 
             <button className="logout-btn" onClick={handleLogout}>
               로그아웃
@@ -125,6 +128,7 @@ function App() {
             <NavLink to="/medicine">건강</NavLink>
             <NavLink to="/drug">의약</NavLink>
             <NavLink to="/qna">Q&A</NavLink>
+            <NavLink to="/map">지도</NavLink>
             <NavLink to="/mypage" className={({ isActive }) => (isActive ? 'active' : '')}>
               마이페이지
             </NavLink>
@@ -154,6 +158,7 @@ function App() {
         <Route path="/drug-detail/:name" element={<DrugDetail />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/edit-profile" element={<EditProfile />} />
+        <Route path="/map" element={<KakaoMap />} />
 
         {/* 게시판 페이지 */}
         <Route path="/board/write" element={<BoardWrite />} />
