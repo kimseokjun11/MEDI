@@ -1,17 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import "../styles/Home.css";
-import { drugList } from "../api/drugList";
-import { checkInteractions } from "../api/checkInteractions";
+import type { DurItem } from '../api/dur';
+import { checkDurTaboo, searchDurItems } from '../api/dur';
 import ChatBot from "../pages/ChatBot";
 
 // 인기 검색
 const popularSearches = ["타이레놀", "판콜", "비타민C"];
 
-/* ✅ (5) 추천 영양제: 하드코딩 데이터
-   - age(연령대) / goal(목표) / items(추천 리스트)
-   - 필요하면 더 추가하면 됨
-*/
 type AgeKey = "10대" | "20대" | "30대" | "40대" | "50대+" | "전체";
 
 type RecommendSlide = {
@@ -124,11 +120,14 @@ function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingMed, setEditingMed] = useState<number | null>(null);
-
   const [interactions, setInteractions] = useState<
     { withDrug: string; level: string; description: string }[]
   >([]);
   const [selectedDrugCode, setSelectedDrugCode] = useState<string | null>(null);
+
+  // 🔍 DUR 자동완성(서버 검색) 리스트
+  const [suggestions, setSuggestions] = useState<DurItem[]>([]);
+  const [isSuggestLoading, setIsSuggestLoading] = useState(false);
 
   // 자동검색 관련
   const [search, setSearch] = useState("");
@@ -178,10 +177,65 @@ function Home() {
     }
   }, [isModalOpen, editingMed, myMedicines]);
 
+  // 🔍 DUR 자동완성: 모달에서 약 이름을 입력할 때 서버에서 검색
   useEffect(() => {
-    const validMedicines = myMedicines.filter((m) => m.drugCode !== null);
-    const result = checkInteractions(validMedicines);
-    setInteractions(result);
+    // 모달이 열려있을 때만 검색
+    if (!isModalOpen) return;
+
+    // 이미 리스트에서 선택된 상태면 (정확히 선택됨) 재검색 안함
+    if (selectedFromList) {
+      setSuggestions([]);
+      return;
+    }
+
+    const q = search.trim();
+    if (!q) {
+      setSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        setIsSuggestLoading(true);
+        const data = await searchDurItems(q, 20);
+        setSuggestions(data);
+      } catch (e) {
+        console.error('DUR 자동완성 검색 실패', e);
+        setSuggestions([]);
+      } finally {
+        setIsSuggestLoading(false);
+      }
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [search, selectedFromList, isModalOpen]);
+
+  // ✅ 등록된 약(2개 이상)일 때 병용금기(DUR) 체크
+  useEffect(() => {
+    const valid = myMedicines
+      .filter((m) => m?.drugCode)
+      .map((m) => String(m.drugCode)); // drugCode에 ITEM_SEQ 저장
+
+    if (valid.length < 2) {
+      setInteractions([]);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const result = await checkDurTaboo(valid);
+        if (!cancelled) setInteractions(result);
+      } catch (e) {
+        console.error('DUR 병용금기 체크 실패', e);
+        if (!cancelled) setInteractions([]);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [myMedicines]);
 
   // 저장
@@ -216,7 +270,7 @@ function Home() {
   };
 
   // 자동검색 필터
-  const filteredDrugs = drugList.filter((d) => d.name.includes(search));
+  // const filteredDrugs = drugList.filter((d) => d.name.includes(search));
 
   // ✅ 영양제 클릭 시: 네이버 쇼핑 링크(그냥 링크만, API 아님)
   const openShopping = (q: string) => {
@@ -312,9 +366,26 @@ function Home() {
                   </ul>
                 </div>
               )}
-            </>
-          )}
 
+              {/* ✅ 병용금기 없음 메시지 */}
+              {myMedicines.filter((m) => m?.drugCode).length >= 2 && interactions.length === 0 && (
+              <div
+                className="interactions"
+                style={{
+                  marginTop: '12px',
+                  padding: '10px',
+                  backgroundColor: '#e6ffed',
+                  border: '1px solid #34c759',
+                  borderRadius: '6px',
+                  color: '#126b2d',
+                }}
+              >
+                ✅ 현재 선택된 약 조합에서 확인된 병용금기 정보가 없습니다.
+              </div>
+            )}
+          </>
+        )}
+            
           <button
             className="btn"
             onClick={() => {
@@ -323,7 +394,7 @@ function Home() {
             }}
             style={{ marginTop: "12px" }}
           >
-            등록 / 수정
+            등록
           </button>
         </div>
 
@@ -501,8 +572,13 @@ function Home() {
                 />
               </label>
 
-              {/* 자동검색 리스트 */}
-              {search && filteredDrugs.length > 0 && (
+              
+              {/* 자동검색 리스트 지울 수 있음*/}
+              {isSuggestLoading && (
+                <p style={{ marginTop: '6px', fontSize: '0.85rem' }}>검색 중...</p>
+              )}
+
+              {search && suggestions.length > 0 && (
                 <ul
                   style={{
                     maxHeight: "160px",
@@ -513,24 +589,28 @@ function Home() {
                     padding: "4px",
                   }}
                 >
-                  {filteredDrugs.map((d, idx) => (
+                  {suggestions.map((d, idx) => (
                     <li
                       key={idx}
                       style={{ padding: "6px", cursor: "pointer" }}
                       onClick={() => {
-                        setSearch(d.name);
+                        setSearch(d.itemName);
                         setSelectedFromList(true);
-                        setSelectedDrugCode(d.drugCode);
+                        setSelectedDrugCode(d.itemSeq);
+                        setSuggestions([]);
                       }}
                     >
-                      {d.name}
+                  <div style={{ fontWeight: 600 }}>{d.itemName}</div>
+                  {d.entpName && (
+                        <div style={{ fontSize: '0.8rem', color: '#666' }}>{d.entpName}</div>
+                      )}
                     </li>
                   ))}
                 </ul>
               )}
 
-              {search && !selectedFromList && (
-                <p style={{ color: "orange", fontSize: "0.85rem" }}>
+              {search && !selectedFromList && !isSuggestLoading && suggestions.length === 0 && (
+                <p style={{ color: 'orange', fontSize: '0.85rem' }}>
                   ⚠️ 검색 목록에 없는 약입니다. 정확하지 않을 수 있어요.
                 </p>
               )}
@@ -569,7 +649,7 @@ function Home() {
         </div>
       )}
 
-      {/* 삭제 확인 모달 */}
+      {/* 🔹 삭제 확인 모달 */}
       {isDeleteModalOpen && editingMed !== null && (
         <div className="modal-overlay" onClick={() => setIsDeleteModalOpen(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -579,10 +659,7 @@ function Home() {
             </p>
             <div className="modal-actions">
               <button onClick={() => setIsDeleteModalOpen(false)}>취소</button>
-              <button
-                className="btn btn-delete-modal"
-                onClick={() => deleteMedicine(editingMed)}
-              >
+              <button className="btn btn-delete-modal" onClick={() => deleteMedicine(editingMed)}>
                 삭제
               </button>
             </div>
