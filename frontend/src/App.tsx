@@ -167,7 +167,7 @@ function App() {
         <Route path="/medicine" element={<Medicine />} />
         <Route path="/drug" element={<DrugCardPage />} />
         <Route path="/medicine/:id" element={<MedicineDetail />} />
-        <Route path="/drug-detail/:name" element={<DrugDetail />} />
+        <Route path="/drug-detail/:itemSeq" element={<DrugDetail />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/map" element={<KakaoMap />} />
