@@ -1,13 +1,15 @@
 package model;
 
 /**
- * DUR 품목 검색 결과 DTO
- * - itemSeq: 의약품 품목일련번호
- * - itemName: 의약품명
- * - entpName: 업체명
+ * DUR 품목 검색 결과 DTO (확장)
  */
 public record DurItemDto(
         String itemSeq,
         String itemName,
-        String entpName
+        String entpName,
+
+        String materialName,   // ⭐ 성분
+        String chart,          // ⭐ 제형 설명
+        String storageMethod,  // ⭐ 보관법
+        String validTerm       // ⭐ 유효기간
 ) {}

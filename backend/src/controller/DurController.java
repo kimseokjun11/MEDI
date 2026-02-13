@@ -12,7 +12,7 @@ import java.util.List;
  * DUR API 중
  * - 품목 검색(자동완성)
  * - 병용금기 체크
- * 를 프론트에서 쓰기 좋게 JSON으로 제공하는 컨트롤러
+ * - 전체 품목 조회
  */
 @RestController
 @RequestMapping("/api/dur")
@@ -26,26 +26,54 @@ public class DurController {
     }
 
     /**
-     * 자동완성용 검색
-     * 예) GET /api/dur/search?q=타이레놀
+     * ✅ 자동완성 + itemSeq 검색 통합
+     * 예)
+     * GET /api/dur/search?q=타이레놀
+     * GET /api/dur/search?itemSeq=12345
      */
     @GetMapping("/search")
-    public List<DurItemDto> search(@RequestParam(name = "q", required = false) String q,
-                                   @RequestParam(name = "itemName", required = false) String itemName,
-                                   @RequestParam(name = "limit", required = false, defaultValue = "20") int limit) {
+    public List<DurItemDto> search(
 
-        // q 또는 itemName 둘 중 하나로 받기
+            @RequestParam(name = "q", required = false) String q,
+            @RequestParam(name = "itemName", required = false) String itemName,
+
+            // ⭐ itemSeq 추가
+            @RequestParam(name = "itemSeq", required = false) String itemSeq,
+
+            @RequestParam(name = "limit", required = false, defaultValue = "20") int limit
+    ) {
+
+        // ✅ itemSeq 우선 처리
+        if (itemSeq != null && !itemSeq.isBlank()) {
+            return durService.searchByItemSeq(itemSeq);
+        }
+
+        // ✅ 일반 검색
         String keyword = (q != null && !q.isBlank()) ? q : itemName;
+
+        if (keyword == null || keyword.isBlank()) {
+            return List.of(); // 빈 검색 방지
+        }
+
         return durService.searchItems(keyword, limit);
     }
 
     /**
-     * 병용금기 체크
-     * 예) POST /api/dur/taboo/check  body: {"itemSeqs":["195700013","201405281"]}
+     * ✅ 병용금기 체크
+     * 예) POST /api/dur/taboo/check
      */
     @PostMapping("/taboo/check")
     public List<DurTabooWarningDto> checkTaboo(@RequestBody DurTabooCheckRequest req) {
         if (req == null || req.itemSeqs() == null) return List.of();
         return durService.checkTaboo(req.itemSeqs());
+    }
+
+    /**
+     * ✅ 전체 품목 조회
+     * 예) GET /api/dur/all
+     */
+    @GetMapping("/all")
+    public List<DurItemDto> getAllItems() {
+        return durService.fetchAllItems();
     }
 }

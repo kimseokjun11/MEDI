@@ -327,7 +327,7 @@ function Home() {
                           ⚠️
                         </span>
                       )}
-                      {" "}· {med.dose} · 하루 {med.frequency}회
+                      {/* {" "}· {med.dose} · 하루 {med.frequency}회 */}
                     </span>
 
                     <button
@@ -523,14 +523,14 @@ function Home() {
         </div>
 
         {/* 인기 검색 */}
-        <div className="card">
+        {/* <div className="card">
           <h3>📊 요즘 많이 검색</h3>
           <ul>
             {popularSearches.map((item, idx) => (
               <li key={idx}>{item}</li>
             ))}
           </ul>
-        </div>
+        </div> */}
       </section>
 
       <div className="warning">

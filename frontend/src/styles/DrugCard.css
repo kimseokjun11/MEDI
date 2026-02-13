@@ -95,8 +95,15 @@
 
 .drug-effect {
   font-size: 14px;
-  color: #2563eb;
-  line-height: 1.5;
+  color: #1e40af;
+  line-height: 1.4;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;      /* ⭐ 최대 3줄 */
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ✅ 빈 상태 */
@@ -131,4 +138,33 @@
 .drug-pagination button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* OCR 영역 */
+.ocr-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.ocr-result {
+  background: #f1f5f9;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.ocr-result ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.ocr-result li {
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+.ocr-result li:hover {
+  color: #2563eb;
 }

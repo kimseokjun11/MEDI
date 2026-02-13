@@ -14,7 +14,7 @@ import Board from './pages/Board';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FindId from './pages/FindId';
-import Medicine from './pages/Medicine';               
+import Medicine from './pages/Medicine';
 import MedicineDetail from './pages/MedicineDetail';
 import DrugCardPage from "./pages/DrugCardPage";
 import DrugDetail from "./pages/DrugDetail";
@@ -106,7 +106,7 @@ function App() {
               Q&A 관리
             </NavLink>
 
-            
+
 
 
             <button className="logout-btn" onClick={handleLogout}>
@@ -123,10 +123,21 @@ function App() {
 
           <div className="nav-links">
             <NavLink to="/home">홈</NavLink>
-            <NavLink to="/public-data">공지사항</NavLink>
+            {/* <NavLink to="/public-data">공지사항</NavLink> */}
             <NavLink to="/board">게시판</NavLink>
-            <NavLink to="/medicine">건강</NavLink>
-            <NavLink to="/drug">의약</NavLink>
+            {/* <NavLink to="/medicine">건강</NavLink>
+            <NavLink to="/drug">의약</NavLink> */}
+            <NavLink
+              to="/medicine"
+              className={() => {
+                const path = location.pathname;
+                return path.startsWith("/medicine") || path.startsWith("/drug")
+                  ? "active"
+                  : "";
+              }}
+            >
+              약정보
+            </NavLink>
             <NavLink to="/qna">Q&A</NavLink>
             <NavLink to="/map">지도</NavLink>
             <NavLink to="/mypage" className={({ isActive }) => (isActive ? 'active' : '')}>
@@ -153,7 +164,7 @@ function App() {
         <Route path="/public-data" element={<PublicData />} />
         <Route path="/board" element={<Board />} />
         <Route path="/medicine" element={<Medicine />} />
-        <Route path="/drug" element={<DrugCardPage />} />          
+        <Route path="/drug" element={<DrugCardPage />} />
         <Route path="/medicine/:id" element={<MedicineDetail />} />
         <Route path="/drug-detail/:name" element={<DrugDetail />} />
         <Route path="/mypage" element={<MyPage />} />
