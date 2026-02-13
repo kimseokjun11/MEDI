@@ -14,77 +14,96 @@ const Login = ({ setIsLogin }: LoginProps) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-const handleLogin = async () => {
-  if (!userid || !password) {
-    setError('아이디와 비밀번호를 입력해주세요.');
-    return;
-  }
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault(); // ⭐ form 기본 새로고침 방지
 
-  try {
-    const response = await axios.post('http://localhost:8080/api/members/login', {
-      userid: userid,
-      password: password
-    });
-
-    if (response.status === 200 && response.data) {
-      const member = response.data; 
-
-      // ✅ 키값을 'loginUser'로 유지하여 게시판 등 다른 페이지와 연동합니다.
-      localStorage.setItem('isLogin', 'true');
-      localStorage.setItem('loginUser', member.userid); 
-      localStorage.setItem('userRole', member.role);    
-
-      setIsLogin(true);
-      setError('');
-
-// ✅ [추가] 관리자 여부에 따른 리다이렉트 분기
-      if (member.role === 'ADMIN') {
-        // 관리자라면 관리자 대시보드로 이동
-        navigate('/admin'); 
-      } else {
-        // 일반 유저라면 홈으로 이동
-        navigate('/home'); 
-      }
+    if (!userid || !password) {
+      setError('아이디와 비밀번호를 입력해주세요.');
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    setError('아이디 또는 비밀번호가 틀렸습니다!');
-  }
-};
+
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/api/members/login',
+        {
+          userid,
+          password,
+        }
+      );
+
+      if (response.status === 200 && response.data) {
+        const member = response.data;
+
+        // ✅ 로그인 정보 저장
+        localStorage.setItem('isLogin', 'true');
+        localStorage.setItem('loginUser', member.userid);
+        localStorage.setItem('userRole', member.role);
+
+        setIsLogin(true);
+        setError('');
+
+        // ✅ 관리자 분기
+        if (member.role === 'ADMIN') {
+          navigate('/admin');
+        } else {
+          navigate('/home');
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      setError('아이디 또는 비밀번호가 틀렸습니다!');
+    }
+  };
 
   return (
     <div className="login-wrapper">
       <div className="login-card">
         <h2 className="login-title">로그인</h2>
 
-        <input
-          className="login-input"
-          placeholder="아이디"
-          value={userid}
-          onChange={(e) => setUserid(e.target.value)}
-        />
-        <input
-          className="login-input"
-          type="password"
-          placeholder="비밀번호"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        {/* ✅ form 추가 */}
+        <form onSubmit={handleLogin}>
+          <input
+            className="login-input"
+            placeholder="아이디"
+            value={userid}
+            onChange={(e) => setUserid(e.target.value)}
+          />
 
-        {error && <div className="login-error">{error}</div>}
+          <input
+            className="login-input"
+            type="password"
+            placeholder="비밀번호"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        <button className="login-button" onClick={handleLogin}>
-          로그인
-        </button>
+          {error && <div className="login-error">{error}</div>}
+
+          {/* ✅ submit 버튼 */}
+          <button className="login-button" type="submit">
+            로그인
+          </button>
+        </form>
 
         <div className="login-links">
-          <button className="login-link" onClick={() => navigate('/find-id')}>
+          <button
+            className="login-link"
+            onClick={() => navigate('/find-id')}
+          >
             아이디 찾기
           </button>
-          <button className="login-link" onClick={() => navigate('/find-password')}>
+
+          <button
+            className="login-link"
+            onClick={() => navigate('/find-password')}
+          >
             비밀번호 찾기
           </button>
-          <button className="login-link" onClick={() => navigate('/signup')}>
+
+          <button
+            className="login-link"
+            onClick={() => navigate('/signup')}
+          >
             회원가입
           </button>
         </div>

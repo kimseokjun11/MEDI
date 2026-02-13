@@ -1,0 +1,83 @@
+/* Q&A 전용 유저 스타일 */
+.qna-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* 상태 뱃지 세련되게 수정 */
+.qna-badge {
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.qna-badge.wait { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
+.qna-badge.done { background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; }
+
+/* 질문 상세 카드 */
+.qna-post-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* */
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+.qna-header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.qna-title-area h2 { font-size: 24px; color: #1e293b; margin: 0 0 8px 0; }
+.qna-meta { font-size: 14px; color: #64748b; }
+
+/* 답변 박스 (중요) */
+.qna-answer-wrapper {
+  background: #f8fafc; /* */
+  border-radius: 16px;
+  padding: 25px;
+  border-left: 5px solid #2563eb;
+  position: relative;
+}
+
+.qna-answer-wrapper::before {
+  content: "A";
+  position: absolute;
+  left: -15px;
+  top: 20px;
+  background: #2563eb;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.answer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.answer-header h3 { font-size: 18px; color: #2563eb; margin: 0; }
+
+.qna-btn-list {
+  display: block;
+  width: fit-content;
+  margin: 30px auto;
+  padding: 10px 25px;
+  background: #1e293b;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}

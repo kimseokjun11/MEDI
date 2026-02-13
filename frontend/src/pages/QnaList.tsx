@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/Board.css';
+import '../styles/QnaUser.css';
 
 interface QnaData {
   id: number;
@@ -45,85 +45,43 @@ const QnaList = () => {
     setSearchKeyword(keyword);
   };
 
-  return (
-    <div className="board-wrapper">
-      <div className="board-header">
-        <h2>Q&A 게시판</h2>
-
-        <div className="board-actions">
-          <input
-            className="board-search"
-            placeholder="제목 검색"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-          />
-
-          <button
-            className="board-btn primary"
-            onClick={handleSearch}
-          >
-            검색
-          </button>
-
-          <button
-            className="board-btn primary"
-            onClick={() => navigate('/qna/write')}
-          >
-            질문하기
-          </button>
-        </div>
+return (
+  <div className="qna-container">
+    <div className="board-header">
+      <h2>❓ Q&A 고객지원</h2>
+      <div className="board-actions">
+        <input className="board-search" placeholder="궁금한 내용을 검색하세요" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+        <button className="board-btn primary" onClick={handleSearch}>검색</button>
+        <button className="board-btn primary" onClick={() => navigate('/qna/write')}>문의하기</button>
       </div>
+    </div>
 
-      <table className="board-table">
-        <thead>
-          <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>작성자</th>
-            <th>작성일</th>
-            <th>상태</th>
+    <table className="board-table">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>질문 제목</th>
+          <th>상태</th>
+          <th>작성일</th>
+        </tr>
+      </thead>
+      <tbody>
+        {posts.map((post, index) => (
+          <tr key={post.id}>
+            <td>{post.id}</td>
+            <td className="board-title" onClick={() => navigate(`/qna/${post.id}`)}>
+              {post.secret && '🔒 '} {post.title}
+            </td>
+            <td>
+              <span className={`qna-badge ${post.answered ? 'done' : 'wait'}`}>
+                {post.answered ? '답변완료' : '답변대기'}
+              </span>
+            </td>
+            <td style={{ color: '#94a3b8' }}>{post.date?.substring(0, 10)}</td>
           </tr>
-        </thead>
-
-        <tbody>
-          {posts.length === 0 ? (
-            <tr>
-              <td colSpan={5} style={{ textAlign: 'center', padding: '30px' }}>
-                질문이 없습니다.
-              </td>
-            </tr>
-          ) : (
-            posts.map((post, index) => (
-              <tr key={post.id}>
-                <td>{index + 1 + page * 10}</td>
-
-                <td
-                  className="board-title"
-                  onClick={() => navigate(`/qna/${post.id}`)}
-                >
-                  {post.secret && '🔒 '}
-                  {post.title}
-                </td>
-
-                <td>{post.writer}</td>
-                <td>{post.date?.substring(0, 10)}</td>
-
-                <td>
-                  {post.answered ? (
-                    <span style={{ color: '#16a34a', fontWeight: 600 }}>
-                      답변완료
-                    </span>
-                  ) : (
-                    <span style={{ color: '#f59e0b', fontWeight: 600 }}>
-                      대기중
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+        ))}
+      </tbody>
+    </table>
 
       {/* 페이지 버튼 */}
       <div style={{ marginTop: '20px', textAlign: 'center' }}>

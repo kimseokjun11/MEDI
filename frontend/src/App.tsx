@@ -34,6 +34,7 @@ import AdminBoard from './pages/admin/AdminBoard';
 import AdminMembers from './pages/admin/AdminMembers';
 import AdminQna from './pages/admin/AdminQna';
 import AdminQnaDetail from './pages/admin/AdminQnaDetail';
+import AdminBoardDetail from './pages/admin/AdminBoardDetail'; 
 
 
 import './App.css';
@@ -187,6 +188,7 @@ function App() {
         <Route path="/admin/members" element={<AdminMembers />} />
         <Route path="/admin/qna" element={<AdminQna />} />
         <Route path="/admin/qna/:id" element={<AdminQnaDetail />} />
+        <Route path="/admin/board/:id" element={<AdminBoardDetail />} />
       </Routes>
     </div>
   );

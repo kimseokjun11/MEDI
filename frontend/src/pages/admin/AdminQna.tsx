@@ -95,14 +95,14 @@ const AdminQna = () => {
             posts.map((post) => (
               <tr key={post.id}>
                 <td>{post.id}</td>
-
+                
                 <td
-                  className="admin-qna-title-cell"
-                  onClick={() => navigate(`/qna/${post.id}`)}
+                className="admin-qna-title-cell"
+                onClick={() => navigate(`/admin/qna/${post.id}`)} // 👈 일반 /qna/ 에서 관리자용 /admin/qna/ 로 변경
                 >
                   {post.secret && '🔒 '}
                   {post.title}
-                </td>
+                  </td>
 
                 <td>{post.writer}</td>
 

@@ -1,0 +1,74 @@
+.admin-detail-wrapper {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.board-content-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.board-info h3 {
+  font-size: 24px;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.board-body {
+  min-height: 150px;
+  padding: 20px 0;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.comment-management-section {
+  margin-top: 40px;
+}
+
+.comment-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.comment-admin-table th {
+  background: #f9fafb;
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid #edf2f7;
+}
+
+.comment-admin-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.comment-del-btn {
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.back-list-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #374151;
+  color: #fff;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+

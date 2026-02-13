@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/BoardDetail.css';
+import '../styles/QnaUser.css';
 
 interface CommentData {
   id: number;
@@ -118,111 +118,47 @@ const QnaDetail = () => {
     }
   };
 
-  return (
-    <div className="boarddetail-wrapper">
-
-      {/* 제목 */}
-      <h2>
-        {post.secret && '🔒 '}
-        {post.title}
-      </h2>
-
-      {/* 작성 정보 */}
-      <div className="boarddetail-info">
-        작성자: {post.writer} | 작성일: {post.date?.substring(0, 10)}
-      </div>
-
-      {/* 본문 */}
-      <div className="boarddetail-content">
-        {post.content}
-      </div>
-
-      {/* ================= 관리자 답변 입력 영역 ================= */}
-      {userRole === 'ADMIN' && (
-        <div style={{ marginTop: '40px' }}>
-          <h3>관리자 답변</h3>
-
-          <textarea
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            style={{ width: '100%', height: '120px' }}
-          />
-
-          <button
-            style={{ marginTop: '10px' }}
-            onClick={handleAnswerSubmit}
-          >
-            답변 등록
-          </button>
-        </div>
-      )}
-
-      {/* ================= 기존 답변 표시 ================= */}
-      {post.answer && userRole !== 'ADMIN' && (
-        <div style={{ marginTop: '40px' }}>
-          <h3>관리자 답변</h3>
-
-          <div
-            style={{
-              background: '#f1f5f9',
-              padding: '15px',
-              borderRadius: '8px',
-            }}
-          >
-            {post.answer}
+return (
+  <div className="qna-container">
+    {/* 1. 질문 카드 */}
+    <div className="qna-post-card">
+      <div className="qna-header-info">
+        <div className="qna-title-area">
+          <span className={`qna-badge ${post.answered ? 'done' : 'wait'}`} style={{marginBottom: '10px', display: 'inline-block'}}>
+            {post.answered ? '답변완료' : '접수됨'}
+          </span>
+          <h2>{post.secret && '🔒 '} {post.title}</h2>
+          <div className="qna-meta">
+            작성자: <strong>{post.writer}</strong> | 일시: {post.date?.substring(0, 10)}
           </div>
         </div>
-      )}
-
-      {/* ================= 댓글 영역 ================= */}
-      {!post.secret && (
-        <div style={{ marginTop: '40px' }}>
-          <h3>댓글</h3>
-
-          {post.comments?.length === 0 && (
-            <div style={{ color: '#888' }}>
-              댓글이 없습니다.
-            </div>
-          )}
-
-          {post.comments?.map((c) => (
-            <div key={c.id} style={{ marginBottom: '10px' }}>
-              <strong>{c.writer}</strong> : {c.content}
-            </div>
-          ))}
-
-          {loginUser && (
-            <>
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="댓글을 입력하세요"
-                style={{
-                  width: '100%',
-                  height: '80px',
-                  marginTop: '10px',
-                }}
-              />
-
-              <button
-                style={{ marginTop: '10px' }}
-                onClick={handleCommentSubmit}
-              >
-                댓글 등록
-              </button>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* 목록 버튼 */}
-      <div style={{ marginTop: '40px' }}>
-        <button onClick={() => navigate('/qna')}>
-          목록으로
-        </button>
+      </div>
+      <div className="boarddetail-content" style={{fontSize: '16px', lineHeight: '1.8'}}>
+        {post.content}
       </div>
     </div>
-  );
+
+    {/* 2. 답변 영역 (답변이 있을 때만 표시) */}
+    {post.answered && post.answer ? (
+      <div className="qna-answer-wrapper">
+        <div className="answer-header">
+          <h3>✅ 관리자 공식 답변</h3>
+        </div>
+        <div className="answer-body" style={{lineHeight: '1.7', color: '#334155'}}>
+          {post.answer}
+        </div>
+      </div>
+    ) : (
+      <div style={{textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '16px', color: '#94a3b8'}}>
+        💬 담당자가 질문을 확인하고 있습니다. 조금만 기다려 주세요!
+      </div>
+    )}
+
+    <button className="qna-btn-list" onClick={() => navigate('/qna')}>
+      목록으로 돌아가기
+    </button>
+  </div>
+);
 };
 
 export default QnaDetail;
