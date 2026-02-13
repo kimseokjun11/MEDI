@@ -128,6 +128,7 @@ function Home() {
   // 🔍 DUR 자동완성(서버 검색) 리스트
   const [suggestions, setSuggestions] = useState<DurItem[]>([]);
   const [isSuggestLoading, setIsSuggestLoading] = useState(false);
+  const [durLoading, setDurLoading] = useState(false);
 
   // 자동검색 관련
   const [search, setSearch] = useState("");
@@ -225,11 +226,15 @@ function Home() {
 
     (async () => {
       try {
+        setDurLoading(true);
         const result = await checkDurTaboo(valid);
         if (!cancelled) setInteractions(result);
       } catch (e) {
         console.error('DUR 병용금기 체크 실패', e);
         if (!cancelled) setInteractions([]);
+      }
+      finally {
+        if (!cancelled) setDurLoading(false); // 로딩 종료
       }
     })();
 
@@ -268,9 +273,6 @@ function Home() {
     setIsDeleteModalOpen(false);
     setEditingMed(null);
   };
-
-  // 자동검색 필터
-  // const filteredDrugs = drugList.filter((d) => d.name.includes(search));
 
   // ✅ 영양제 클릭 시: 네이버 쇼핑 링크(그냥 링크만, API 아님)
   const openShopping = (q: string) => {
@@ -341,23 +343,18 @@ function Home() {
                 ))}
               </ul>
 
-              {/* 상호작용 결과 표시 */}
-              {interactions.length > 0 && (
-                <div
-                  className="interactions"
-                  style={{
-                    marginTop: "12px",
-                    padding: "10px",
-                    backgroundColor: "#ffe6e6",
-                    border: "1px solid #ff4d4f",
-                    borderRadius: "6px",
-                    color: "#a80000",
-                  }}
-                >
-                  <h4 style={{ margin: 0, marginBottom: "6px" }}>
-                    ⚠️ 상호작용 주의
-                  </h4>
-                  <ul style={{ paddingLeft: "16px", margin: 0 }}>
+              {/* ⏳ DUR 로딩 중 */}
+              {durLoading && (
+                <div className="interactions loading">
+                  ⏳ 상호작용 정보를 검색 중입니다...
+                </div>
+              )}
+
+              {/* ⚠ 상호작용 있음 */}
+              {!durLoading && interactions.length > 0 && (
+                <div className="interactions warning">
+                  <h4>⚠️ 상호작용 주의</h4>
+                  <ul>
                     {interactions.map((i, idx) => (
                       <li key={idx}>
                         <strong>{i.withDrug}</strong> ({i.level}): {i.description}
@@ -367,25 +364,20 @@ function Home() {
                 </div>
               )}
 
-              {/* ✅ 병용금기 없음 메시지 */}
-              {myMedicines.filter((m) => m?.drugCode).length >= 2 && interactions.length === 0 && (
-              <div
-                className="interactions"
-                style={{
-                  marginTop: '12px',
-                  padding: '10px',
-                  backgroundColor: '#e6ffed',
-                  border: '1px solid #34c759',
-                  borderRadius: '6px',
-                  color: '#126b2d',
-                }}
-              >
-                ✅ 현재 선택된 약 조합에서 확인된 병용금기 정보가 없습니다.
-              </div>
-            )}
-          </>
-        )}
-            
+              {/* ✅ 병용금기 없음 */}
+              {!durLoading &&
+                myMedicines.filter((m) => m?.drugCode).length >= 2 &&
+                interactions.length === 0 && (
+                  <div className="interactions safe">
+                    ✅ 현재 선택된 약 조합에서 확인된 병용금기 정보가 없습니다.
+                  </div>
+                )}
+
+
+
+            </>
+          )}
+
           <button
             className="btn"
             onClick={() => {
@@ -572,7 +564,7 @@ function Home() {
                 />
               </label>
 
-              
+
               {/* 자동검색 리스트 지울 수 있음*/}
               {isSuggestLoading && (
                 <p style={{ marginTop: '6px', fontSize: '0.85rem' }}>검색 중...</p>
@@ -600,8 +592,8 @@ function Home() {
                         setSuggestions([]);
                       }}
                     >
-                  <div style={{ fontWeight: 600 }}>{d.itemName}</div>
-                  {d.entpName && (
+                      <div style={{ fontWeight: 600 }}>{d.itemName}</div>
+                      {d.entpName && (
                         <div style={{ fontSize: '0.8rem', color: '#666' }}>{d.entpName}</div>
                       )}
                     </li>
@@ -615,16 +607,16 @@ function Home() {
                 </p>
               )}
 
-              <label>
+              {/* <label>
                 복용량
                 <input
                   name="dose"
                   placeholder="예: 1정"
                   defaultValue={editingMed !== null ? myMedicines[editingMed].dose : ""}
                 />
-              </label>
+              </label> */}
 
-              <label>
+              {/* <label>
                 복용 횟수
                 <select
                   name="frequency"
@@ -634,7 +626,7 @@ function Home() {
                   <option value="2">하루 2회</option>
                   <option value="3">하루 3회</option>
                 </select>
-              </label>
+              </label> */}
 
               <div className="modal-actions">
                 <button type="button" onClick={() => setIsModalOpen(false)}>
