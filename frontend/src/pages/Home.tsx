@@ -309,15 +309,7 @@ function Home() {
                 상호작용 및 병용 금기를 확인할 수 있어요
               </p>
 
-              <button
-                className="btn primary"
-                onClick={() => {
-                  setEditingMed(null);
-                  setIsModalOpen(true);
-                }}
-              >
-                약 등록하기
-              </button>
+              
             </div>
           ) : (
             <>
@@ -395,16 +387,15 @@ function Home() {
             </>
           )}
 
-          {/* <button
-            className="btn"
+          <button
+            className="btn primary empty-action"
             onClick={() => {
               setEditingMed(null);
               setIsModalOpen(true);
             }}
-            style={{ marginTop: "12px" }}
           >
-            등록
-          </button> */}
+            약 등록하기
+          </button>
         </div>
 
         {/* 추천 영양제 카드(하드코딩) */}

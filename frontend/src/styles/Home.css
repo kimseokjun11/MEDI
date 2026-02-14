@@ -290,4 +290,7 @@
   line-height: 1.5;
 }
 
-
+.empty-action {
+  display: block;
+  margin: 20px auto 0;
+}
