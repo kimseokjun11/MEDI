@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // ⭐ 통신 도구 추가
-import '../styles/FindId.css'; // 기존 스타일 유지
+import axios from 'axios';
+import '../styles/FindId.css';
 
+
+//백엔드에 이메일을 보내면 -> 아이디를 전송 받는 원리
 const FindId = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
-  const [foundId, setFoundId] = useState(''); // 찾은 아이디 저장
+  const [foundId, setFoundId] = useState('');
   const [error, setError] = useState('');
 
   const handleFindId = async () => {
@@ -16,11 +18,12 @@ const FindId = () => {
     }
 
     try {
-      // ⭐ 백엔드에 이메일 보내서 아이디 물어보기
+      // 백엔드에 이메일 보내기
       const response = await axios.post('http://localhost:8080/api/members/find-id', {
         email: email
       });
 
+      //백엔드 서버에 요청 성공
       if (response.status === 200) {
         // 성공하면 받아온 아이디를 화면에 보여줌
         setFoundId(response.data);
@@ -38,7 +41,7 @@ const FindId = () => {
       <div className="findid-card">
         <h2 className="findid-title">아이디 찾기</h2>
 
-        {/* 1. 아이디를 찾기 전: 입력창 보여주기 */}
+        {/* 아디 찾기 위한 입력 창 */}
         {!foundId ? (
           <>
             <p className="findid-desc">
@@ -60,7 +63,7 @@ const FindId = () => {
             </button>
           </>
         ) : (
-          /* 2. 아이디를 찾은 후: 결과 보여주기 */
+          /* 아이디 찾은 후 결과 */
           <div style={{ textAlign: 'center', padding: '20px 0' }}>
             <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '10px' }}>
               회원님의 아이디는 아래와 같습니다.

@@ -15,7 +15,7 @@ const Login = ({ setIsLogin }: LoginProps) => {
   const [error, setError] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // ⭐ form 기본 새로고침 방지
+    e.preventDefault(); 
 
     if (!userid || !password) {
       setError('아이디와 비밀번호를 입력해주세요.');
@@ -34,7 +34,7 @@ const Login = ({ setIsLogin }: LoginProps) => {
       if (response.status === 200 && response.data) {
         const member = response.data;
 
-        // ✅ 로그인 정보 저장
+        // 로그인 정보 저장
         localStorage.setItem('isLogin', 'true');
         localStorage.setItem('loginUser', member.userid);
         localStorage.setItem('userRole', member.role);
@@ -42,7 +42,7 @@ const Login = ({ setIsLogin }: LoginProps) => {
         setIsLogin(true);
         setError('');
 
-        // ✅ 관리자 분기
+        // 관리자 분기
         if (member.role === 'ADMIN') {
           navigate('/admin');
         } else {
@@ -60,7 +60,7 @@ const Login = ({ setIsLogin }: LoginProps) => {
       <div className="login-card">
         <h2 className="login-title">로그인</h2>
 
-        {/* ✅ form 추가 */}
+        {/* form 추가 */}
         <form onSubmit={handleLogin}>
           <input
             className="login-input"
@@ -79,7 +79,7 @@ const Login = ({ setIsLogin }: LoginProps) => {
 
           {error && <div className="login-error">{error}</div>}
 
-          {/* ✅ submit 버튼 */}
+          
           <button className="login-button" type="submit">
             로그인
           </button>

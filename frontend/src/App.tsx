@@ -46,10 +46,10 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ admin 페이지 여부 (경로 기준)
+  // admin 페이지 여부
   const isAdminPage = location.pathname.startsWith('/admin');
 
-  // ✅ 새로고침 시 로그인 상태 복구
+  // 새로고침 시 로그인 상태 복구
   useEffect(() => {
     const savedLogin = localStorage.getItem('isLogin');
     const savedRole = localStorage.getItem('userRole');
@@ -60,7 +60,7 @@ function App() {
     }
   }, []);
 
-  // ✅ 로그아웃
+  // 로그아웃
   const handleLogout = () => {
     localStorage.clear();
     setIsLogin(false);
@@ -70,7 +70,7 @@ function App() {
 
   return (
     <div className="app">
-      {/* ================= 관리자 네비 ================= */}
+      {/* 관리자 페이지 상단 바 */}
       {isLogin && isAdminPage && (
         <nav className="admin-nav">
           <div className="logo">
@@ -117,17 +117,17 @@ function App() {
         </nav>
       )}
 
-      {/* ================= 일반 유저 네비 ================= */}
+      {/* 유저 페이지 상단 바 */}
       {isLogin && !isAdminPage && (
         <nav className="top-nav">
           <div className="logo">💊 MEDI</div>
 
           <div className="nav-links">
             <NavLink to="/home">홈</NavLink>
+            {/*공지사항은 틀만 만들어져 있고 시간 남으면 사용, 안남으면 폐기*/}
             {/* <NavLink to="/public-data">공지사항</NavLink> */}
             <NavLink to="/board">게시판</NavLink>
-            {/* <NavLink to="/medicine">건강</NavLink>
-            <NavLink to="/drug">의약</NavLink> */}
+            
             <NavLink
               to="/medicine"
               className={() => {
@@ -152,7 +152,7 @@ function App() {
         </nav>
       )}
 
-      {/* ================= 라우팅 ================= */}
+      {/* 라우팅 */}
       <Routes>
         {/* 로그인 / 회원 */}
         <Route path="/" element={<Login setIsLogin={setIsLogin} />} />

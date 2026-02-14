@@ -11,7 +11,7 @@ const BoardEdit = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-  // 1. 기존 데이터 불러와서 입력창에 채워넣기
+  // 기존 데이터 불러오기
   useEffect(() => {
     axios.get(`http://localhost:8080/api/boards/${id}`)
       .then(res => {
@@ -30,7 +30,7 @@ const BoardEdit = () => {
       });
   }, [id, loginUser, navigate]);
 
-  // 2. 수정된 내용 저장 (PUT 요청)
+  // 수정된 내용 저장 (PUT 요청)
   const handleUpdate = async () => {
     if (!title || !content) {
       alert('제목과 내용을 입력해주세요.');

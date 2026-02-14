@@ -65,7 +65,7 @@ const BoardDetail = () => {
           {post.content}
         </div>
 
-        {/*  댓글 연결 */}
+        {/* 댓글 컴포넌트 연결 */}
         <CommentSection postId={post.id} />
 
         <div className="boarddetail-actions">
@@ -73,7 +73,7 @@ const BoardDetail = () => {
           
           {canEdit && (
             <>
-              <button className="edit" onClick={() => navigate(`/board/edit/${post.id}`)}>
+              <button className="edit" onClick={() => navigate(`/board/edit/${post.id}`)}>  
                 수정
               </button>
               <button className="delete" onClick={handleDelete}>

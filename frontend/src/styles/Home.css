@@ -24,7 +24,7 @@
 
 /* 왼쪽 카드 제외한 나머지 카드 */
 .card-grid .card:nth-child(n+2) {
-  height: 250px;          /* 원하는 높이 */
+  height: 498px;          /* 원하는 높이 */
   display: flex;
   flex-direction: column;
 }
@@ -33,7 +33,7 @@
 .card-grid .card:nth-child(n+2) ul,
 .card-grid .card:nth-child(n+2) .slider-wrapper {
   flex: 1;
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 
 /* ===== 카드 ===== */

@@ -134,7 +134,7 @@ function Home() {
   const [search, setSearch] = useState("");
   const [selectedFromList, setSelectedFromList] = useState(false);
 
-  /* ✅ (5) 추천 영양제 상태: 연령대 선택 + 슬라이드 */
+  /* 추천 영양제 상태: 연령대 선택 + 슬라이드 */
   const [ageKey, setAgeKey] = useState<AgeKey>("20대");
   const [slideIndex, setSlideIndex] = useState(0);
 
@@ -178,7 +178,7 @@ function Home() {
     }
   }, [isModalOpen, editingMed, myMedicines]);
 
-  // 🔍 DUR 자동완성: 모달에서 약 이름을 입력할 때 서버에서 검색
+  //  DUR 자동완성: 모달에서 약 이름을 입력할 때 서버에서 검색
   useEffect(() => {
     // 모달이 열려있을 때만 검색
     if (!isModalOpen) return;
@@ -211,7 +211,7 @@ function Home() {
     return () => clearTimeout(timer);
   }, [search, selectedFromList, isModalOpen]);
 
-  // ✅ 등록된 약(2개 이상)일 때 병용금기(DUR) 체크
+  // 등록된 약(2개 이상)일 때 병용금기(DUR) 체크
   useEffect(() => {
     const valid = myMedicines
       .filter((m) => m?.drugCode)
@@ -274,7 +274,7 @@ function Home() {
     setEditingMed(null);
   };
 
-  // ✅ 영양제 클릭 시: 네이버 쇼핑 링크(그냥 링크만, API 아님)
+  // 영양제 클릭 시: 네이버 쇼핑 링크(그냥 링크만, API 아님)
   const openShopping = (q: string) => {
     window.open(
       `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(q)}`,
@@ -288,7 +288,7 @@ function Home() {
       {/* 히어로 */}
       <section className="hero">
         <h1>💊 이 약, 같이 먹어도 될까?</h1>
-        <p>시중 약 기준 · 음식 · 약물 상호작용 한 번에 확인</p>
+        <p style={{ color: 'white' }}>시중 약 기준 · 음식 · 약물 상호작용 한 번에 확인</p>
         <button className="btn" onClick={() => navigate("/medicine")}>
           약 검색하기 →
         </button>
@@ -343,14 +343,14 @@ function Home() {
                 ))}
               </ul>
 
-              {/* ⏳ DUR 로딩 중 */}
+              {/* DUR 로딩 중 */}
               {durLoading && (
                 <div className="interactions loading">
                   ⏳ 상호작용 정보를 검색 중입니다...
                 </div>
               )}
 
-              {/* ⚠ 상호작용 있음 */}
+              {/* 상호작용 있음 */}
               {!durLoading && interactions.length > 0 && (
                 <div className="interactions warning">
                   <h4>⚠️ 상호작용 주의</h4>
@@ -364,7 +364,7 @@ function Home() {
                 </div>
               )}
 
-              {/* ✅ 병용금기 없음 */}
+              {/* 병용금기 없음 */}
               {!durLoading &&
                 myMedicines.filter((m) => m?.drugCode).length >= 2 &&
                 interactions.length === 0 && (
@@ -390,7 +390,7 @@ function Home() {
           </button>
         </div>
 
-        {/* ✅ (5) 하드코딩 추천 영양제 카드 */}
+        {/* 추천 영양제 카드(하드코딩) */}
         <div className="card caution slider-card">
           <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", alignItems: "center" }}>
             <div>
@@ -607,6 +607,7 @@ function Home() {
                 </p>
               )}
 
+              {/* 추가적인 api를 불러와야 아래 내용이 가능한데 시간 남으면 추가해보죠 */}
               {/* <label>
                 복용량
                 <input
