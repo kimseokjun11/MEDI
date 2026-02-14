@@ -301,7 +301,24 @@ function Home() {
           <h3>📝 약을 같이 먹어도 될까?</h3>
 
           {myMedicines.length === 0 ? (
-            <p>등록된 약이 없습니다</p>
+            <div className="empty-state">
+              <div className="empty-icon">💊</div>
+              <p className="empty-title">등록된 약이 없습니다</p>
+              <p className="empty-desc">
+                복용 중인 약을 등록하면<br />
+                상호작용 및 병용 금기를 확인할 수 있어요
+              </p>
+
+              <button
+                className="btn primary"
+                onClick={() => {
+                  setEditingMed(null);
+                  setIsModalOpen(true);
+                }}
+              >
+                약 등록하기
+              </button>
+            </div>
           ) : (
             <>
               <ul>
@@ -378,7 +395,7 @@ function Home() {
             </>
           )}
 
-          <button
+          {/* <button
             className="btn"
             onClick={() => {
               setEditingMed(null);
@@ -387,7 +404,7 @@ function Home() {
             style={{ marginTop: "12px" }}
           >
             등록
-          </button>
+          </button> */}
         </div>
 
         {/* 추천 영양제 카드(하드코딩) */}
