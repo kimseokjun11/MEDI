@@ -18,10 +18,10 @@ const Board = () => {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  const [keyword, setKeyword] = useState('');        // 입력용
-  const [searchKeyword, setSearchKeyword] = useState(''); // 실제 검색용
+  const [keyword, setKeyword] = useState('');      
+  const [searchKeyword, setSearchKeyword] = useState('');
 
-  // 🔥 서버 요청은 searchKeyword가 바뀔 때만 실행
+  // 서버 요청은 searchKeyword가 바뀔 때만 실행
   useEffect(() => {
     axios
       .get('http://localhost:8080/api/boards', {
@@ -56,8 +56,7 @@ const Board = () => {
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
           />
-
-          {/* 🔥 파란색 버튼 */}
+          
           <button
             className="board-btn primary"
             onClick={handleSearch}

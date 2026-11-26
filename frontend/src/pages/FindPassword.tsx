@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/Login.css'; // 로그인 스타일 재사용
+import '../styles/Login.css';
 
 const FindPassword = () => {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ const FindPassword = () => {
     if (!userid || !email) return alert('아이디와 이메일을 모두 입력해주세요.');
 
     try {
-      // 로딩 중 표시 대신 간단히 alert
+      // alert로 로딩 중 안내
       alert('잠시만 기다려주세요... 메일을 보내는 중입니다.');
       
       const res = await axios.post('http://localhost:8080/api/members/find-password', {
@@ -22,7 +22,7 @@ const FindPassword = () => {
 
       if (res.status === 200) {
         alert('이메일로 임시 비밀번호를 보냈습니다! 메일함을 확인해주세요.');
-        navigate('/'); // 로그인 화면으로 이동
+        navigate('/'); 
       }
     } catch (err) {
       alert('일치하는 회원 정보가 없거나 전송에 실패했습니다.');
