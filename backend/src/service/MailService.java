@@ -1,6 +1,7 @@
 package service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,9 @@ public class MailService {
     @Autowired
     private JavaMailSender mailSender;
     
-    private static final String FROM_ADDRESS = "***REMOVED***";
+    // 보내는 사람 주소: application.properties 의 spring.mail.username (깃에 올리지 않음)
+    @Value("${spring.mail.username:}")
+    private String fromAddress;
 
     // 1. 랜덤 임시 비밀번호 생성 (10자리)
     public String getTempPassword() {
@@ -36,7 +39,7 @@ public class MailService {
         mail.setTo(toAddress);
         mail.setSubject(title);
         mail.setText(message);
-        mail.setFrom(FROM_ADDRESS);
+        mail.setFrom(fromAddress);
         mailSender.send(mail);
     }
 }
