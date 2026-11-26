@@ -129,6 +129,9 @@ function Home() {
   const [suggestions, setSuggestions] = useState<DurItem[]>([]);
   const [isSuggestLoading, setIsSuggestLoading] = useState(false);
   const [durLoading, setDurLoading] = useState(false);
+  // 병용금기 조회 실패 여부. 실패를 "병용금기 없음" 으로 보여주지 않기 위해 따로 둔다
+  const [durError, setDurError] = useState(false);
+  const [durRetryKey, setDurRetryKey] = useState(0);
 
   // 자동검색 관련
   const [search, setSearch] = useState("");
@@ -219,6 +222,7 @@ function Home() {
 
     if (valid.length < 2) {
       setInteractions([]);
+      setDurError(false);
       return;
     }
 
@@ -227,11 +231,15 @@ function Home() {
     (async () => {
       try {
         setDurLoading(true);
+        setDurError(false);
         const result = await checkDurTaboo(valid);
         if (!cancelled) setInteractions(result);
       } catch (e) {
         console.error('DUR 병용금기 체크 실패', e);
-        if (!cancelled) setInteractions([]);
+        if (!cancelled) {
+          setInteractions([]);
+          setDurError(true);
+        }
       }
       finally {
         if (!cancelled) setDurLoading(false); // 로딩 종료
@@ -241,7 +249,7 @@ function Home() {
     return () => {
       cancelled = true;
     };
-  }, [myMedicines]);
+  }, [myMedicines, durRetryKey]);
 
   // 저장
   const saveMedicines = (data: any) => {
@@ -359,8 +367,22 @@ function Home() {
                 </div>
               )}
 
+              {/* 조회 실패: 결과를 알 수 없으므로 '없음' 으로 안내하지 않는다 */}
+              {!durLoading && durError && (
+                <div className="interactions error">
+                  ⚠️ 병용금기 정보를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.
+                  <button
+                    type="button"
+                    className="interactions-retry"
+                    onClick={() => setDurRetryKey((k) => k + 1)}
+                  >
+                    다시 시도
+                  </button>
+                </div>
+              )}
+
               {/* 상호작용 있음 */}
-              {!durLoading && interactions.length > 0 && (
+              {!durLoading && !durError && interactions.length > 0 && (
                 <div className="interactions warning">
                   <h4>⚠️ 상호작용 주의</h4>
                   <ul>
@@ -375,6 +397,7 @@ function Home() {
 
               {/* 병용금기 없음 */}
               {!durLoading &&
+                !durError &&
                 myMedicines.filter((m) => m?.drugCode).length >= 2 &&
                 interactions.length === 0 && (
                   <div className="interactions safe">

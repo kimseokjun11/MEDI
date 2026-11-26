@@ -251,6 +251,29 @@
   color: #126b2d;
 }
 
+.interactions.error {
+  margin-top: 12px;
+  padding: 10px;
+  background: #fff8e1;
+  border: 1px solid #f5a623;
+  border-radius: 8px;
+  color: #8a5a00;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.interactions-retry {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border: 1px solid #f5a623;
+  border-radius: 6px;
+  background: #fff;
+  color: #8a5a00;
+  cursor: pointer;
+}
+
 @keyframes pulse {
   0% { opacity: 0.5; }
   50% { opacity: 1; }

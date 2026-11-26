@@ -167,6 +167,11 @@ public class DurService {
         }
         if (selected.size() < 2) return List.of();
 
+        // 키가 없으면 API 가 항상 실패하므로 "병용금기 없음" 으로 오해되지 않게 바로 실패로 알린다
+        if (serviceKey == null || serviceKey.isBlank()) {
+            throw new DurApiException("공공데이터 서비스키(public-data.service-key)가 설정되지 않았습니다.");
+        }
+
         List<DurTabooWarningDto> result = new ArrayList<>();
         Set<String> pairDedup = new HashSet<>();
 
@@ -184,7 +189,13 @@ public class DurService {
                 JsonNode root = xmlMapper.readTree(xml.getBytes(StandardCharsets.UTF_8));
 
                 String resultCode = root.path("header").path("resultCode").asText("");
-                if (!"00".equals(resultCode)) continue;
+                // 00 = 정상, 03 = 데이터 없음(이 약은 병용금기 정보가 없음).
+                // 그 밖의 코드나 헤더가 없는 응답(키 오류·트래픽 초과 등)은 조회 실패로 본다.
+                if ("03".equals(resultCode)) continue;
+                if (!"00".equals(resultCode)) {
+                    throw new DurApiException("DUR 병용금기 API 오류(" + baseSeq + "): resultCode="
+                            + (resultCode.isBlank() ? "없음" : resultCode));
+                }
 
                 JsonNode itemNode = root.path("body").path("items").path("item");
                 if (itemNode.isMissingNode() || itemNode.isNull()) continue;
@@ -197,8 +208,13 @@ public class DurService {
                     maybeAddTaboo(result, pairDedup, selected, itemNode);
                 }
 
+            } catch (DurApiException e) {
+                System.err.println("❌ " + e.getMessage());
+                throw e;
             } catch (Exception e) {
+                // 네트워크 오류, 응답 파싱 실패 등. 일부 약이라도 확인하지 못하면 결과를 믿을 수 없으므로 실패로 처리한다
                 System.err.println("❌ 병용금기 오류(" + baseSeq + "): " + e.getMessage());
+                throw new DurApiException("DUR 병용금기 API 호출 실패(" + baseSeq + ")", e);
             }
         }
 

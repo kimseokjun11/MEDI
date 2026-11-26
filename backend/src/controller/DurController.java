@@ -3,10 +3,14 @@ package controller;
 import model.DurItemDto;
 import model.DurTabooCheckRequest;
 import model.DurTabooWarningDto;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import service.DurApiException;
 import service.DurService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * DUR API 중
@@ -75,5 +79,15 @@ public class DurController {
     @GetMapping("/all")
     public List<DurItemDto> getAllItems() {
         return durService.fetchAllItems();
+    }
+
+    /**
+     * 공공데이터 API 호출에 실패하면 빈 목록 대신 502 를 돌려준다.
+     * (빈 목록을 주면 화면이 "병용금기 없음" 으로 잘못 안내하게 된다)
+     */
+    @ExceptionHandler(DurApiException.class)
+    public ResponseEntity<Map<String, String>> handleDurApiFailure(DurApiException e) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(Map.of("message", "병용금기 정보를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요."));
     }
 }
