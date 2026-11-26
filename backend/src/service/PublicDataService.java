@@ -1,5 +1,6 @@
 package service;
 
+import org.springframework.beans.factory.annotation.Value;
 import model.PublicData;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,8 +24,9 @@ public class PublicDataService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // 공공데이터 API 서비스키 (본인 키로 변경 필요)
-    private static final String SERVICE_KEY =
-            "***REMOVED***";
+    // 공공데이터포털 서비스키: application.properties 의 public-data.service-key (깃에 올리지 않음)
+    @Value("${public-data.service-key:}")
+    private String serviceKey;
 
     private static final String BASE_URL =
             "https://apis.data.go.kr/1471000/HtfsInfoService03/getHtfsItem01";
@@ -97,7 +99,7 @@ public class PublicDataService {
     // ✅ URL 생성(중복 제거)
     private URL buildUrl(String searchWord, int pageNo, int numOfRows) throws Exception {
         StringBuilder sb = new StringBuilder(BASE_URL)
-                .append("?serviceKey=").append(SERVICE_KEY)
+                .append("?serviceKey=").append(serviceKey)
                 .append("&pageNo=").append(pageNo)
                 .append("&numOfRows=").append(numOfRows)
                 .append("&type=json");
@@ -128,7 +130,7 @@ public class PublicDataService {
 
         for (int page = 1; page <= maxPages; page++) {
             try {
-                URL url = new URL(BASE_URL + "?serviceKey=" + SERVICE_KEY
+                URL url = new URL(BASE_URL + "?serviceKey=" + serviceKey
                         + "&pageNo=" + page
                         + "&numOfRows=" + apiNumOfRows
                         + "&type=json");

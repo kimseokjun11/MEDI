@@ -1,5 +1,6 @@
 package service;
 
+import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -24,8 +25,9 @@ public class PharmacyService {
      * - 이미 URL 인코딩(%2B, %2F, %3D 등)된 값이라
      * - 또 URLEncoder.encode() 하면 깨질 수 있음 → 그대로 붙이기
      */
-    private static final String SERVICE_KEY =
-            "***REMOVED***";
+    // 공공데이터포털 서비스키: application.properties 의 public-data.service-key (깃에 올리지 않음)
+    @Value("${public-data.service-key:}")
+    private String serviceKey;
 
     /**
      * ✅ 약국 목록 조회 API URL
@@ -123,7 +125,7 @@ public class PharmacyService {
                              int pageNo, int numOfRows) throws Exception {
 
         StringBuilder sb = new StringBuilder(LIST_URL)
-                .append("?serviceKey=").append(SERVICE_KEY)
+                .append("?serviceKey=").append(serviceKey)
                 .append("&pageNo=").append(pageNo)
                 .append("&numOfRows=").append(numOfRows);
 

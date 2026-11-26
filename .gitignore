@@ -16,3 +16,21 @@ backend/target/
 
 # env
 .env
+.env.*
+!.env.example
+
+# 비밀값이 든 설정 파일 (예시 파일만 올린다)
+backend/src/resources/application.properties
+application-local.*
+
+# 빌드 결과·의존성 (경로와 상관없이)
+**/node_modules/
+**/target/
+**/build/
+**/dist/
+
+# IDE·OS
+.idea/
+*.iml
+.DS_Store
+Thumbs.db

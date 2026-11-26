@@ -1,5 +1,6 @@
 package service;
 
+import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import model.DurItemDto;
@@ -17,8 +18,9 @@ import java.util.*;
 @Service
 public class DurService {
 
-    private static final String SERVICE_KEY =
-            "***REMOVED***";
+    // 공공데이터포털 서비스키: application.properties 의 public-data.service-key (깃에 올리지 않음)
+    @Value("${public-data.service-key:}")
+    private String serviceKey;
 
     private static final String BASE_URL = "https://apis.data.go.kr/1471000/DURPrdlstInfoService03";
     private static final String ITEM_SEARCH_PATH = "/getDurPrdlstInfoList03";
@@ -38,7 +40,7 @@ public class DurService {
             String encoded = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
 
             String url = BASE_URL + ITEM_SEARCH_PATH
-                    + "?serviceKey=" + SERVICE_KEY
+                    + "?serviceKey=" + serviceKey
                     + "&pageNo=1"
                     + "&numOfRows=" + rows
                     + "&type=xml"
@@ -90,7 +92,7 @@ public class DurService {
             while (pageNo <= 50 && all.size() < maxItems) {
 
                 String url = BASE_URL + ITEM_SEARCH_PATH
-                        + "?serviceKey=" + SERVICE_KEY
+                        + "?serviceKey=" + serviceKey
                         + "&pageNo=" + pageNo
                         + "&numOfRows=" + rows
                         + "&type=xml";
@@ -171,7 +173,7 @@ public class DurService {
         for (String baseSeq : selected) {
             try {
                 String url = BASE_URL + TABOO_PATH
-                        + "?serviceKey=" + SERVICE_KEY
+                        + "?serviceKey=" + serviceKey
                         + "&pageNo=1"
                         + "&numOfRows=200"
                         + "&type=xml"
@@ -267,7 +269,7 @@ public class DurService {
 
     try {
         String url = BASE_URL + ITEM_SEARCH_PATH
-                + "?serviceKey=" + SERVICE_KEY
+                + "?serviceKey=" + serviceKey
                 + "&pageNo=1"
                 + "&numOfRows=1"
                 + "&type=xml"

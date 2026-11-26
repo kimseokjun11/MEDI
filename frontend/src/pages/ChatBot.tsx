@@ -52,7 +52,7 @@ ${item.efcyQesitm ?? "정보 없음"}`;
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer ***REMOVED***",
+            "Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY ?? ""}`,
           },
           body: JSON.stringify({
             model: "llama-3.3-70b-versatile",

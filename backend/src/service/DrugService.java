@@ -1,5 +1,6 @@
 package service;
 
+import org.springframework.beans.factory.annotation.Value;
 import model.Drug;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +20,9 @@ public class DrugService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String SERVICE_KEY = "***REMOVED***";
+    // 공공데이터포털 서비스키: application.properties 의 public-data.drug-service-key (깃에 올리지 않음)
+    @Value("${public-data.drug-service-key:}")
+    private String serviceKey;
     private static final String BASE_URL =
             "https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList";
 
@@ -31,7 +34,7 @@ public class DrugService {
             String encoded = URLEncoder.encode(itemName, StandardCharsets.UTF_8);
 
             URL url = new URL(BASE_URL
-                    + "?serviceKey=" + SERVICE_KEY
+                    + "?serviceKey=" + serviceKey
                     + "&pageNo=1&numOfRows=100"
                     + "&itemName=" + encoded
                     + "&type=json");
